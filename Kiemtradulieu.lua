@@ -1,4 +1,4 @@
--- Script Tích Hợp: Tracker Tọa Độ Bất Thường & NPC Tracker
+-- Script All-In-One: Tracker Bất Thường + NPC Tracker ESP + Model/Block Tracker
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
@@ -7,22 +7,29 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 
 -- Xóa GUI cũ nếu tồn tại
-if CoreGui:FindFirstChild("AbnormalTrackerGUI") then
-    CoreGui.AbnormalTrackerGUI:Destroy()
+if CoreGui:FindFirstChild("UltimateTrackerGUI") then
+    CoreGui.UltimateTrackerGUI:Destroy()
 end
 
 _G.AutoLock = false
+_G.NPCESP = false
+
 local lockTargetPos = Vector3.new(0, 0, 0)
 local npcSpawnPositions = {}
+local npcESPFolders = {}
+local modelESPFolders = {}
+
+local maxScanDistance = 150
+local filterKeyword = ""
 
 -- KHỞI TẠO GUI CHÍNH
 local ScreenGui = Instance.new("ScreenGui", CoreGui)
-ScreenGui.Name = "AbnormalTrackerGUI"
+ScreenGui.Name = "UltimateTrackerGUI"
 
 local MainFrame = Instance.new("Frame", ScreenGui)
-MainFrame.Size = UDim2.new(0, 380, 0, 330)
+MainFrame.Size = UDim2.new(0, 420, 0, 380)
 MainFrame.Position = UDim2.new(0.05, 0, 0.2, 0)
-MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 MainFrame.Active = true
 MainFrame.Draggable = true
 
@@ -32,11 +39,11 @@ UICorner.CornerRadius = UDim.new(0, 8)
 -- Thanh Tiêu Đề
 local Title = Instance.new("TextLabel", MainFrame)
 Title.Size = UDim2.new(1, -40, 0, 35)
-Title.Text = "  TRACKER TỌA ĐỘ BẤT THƯỜNG & NPC"
+Title.Text = "  ULTIMATE TRACKER & ESP SYSTEM"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextSize = 13
 Title.Font = Enum.Font.SourceSansBold
-Title.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+Title.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 Title.TextXAlignment = Enum.TextXAlignment.Left
 
 local TitleCorner = Instance.new("UICorner", Title)
@@ -58,62 +65,82 @@ CloseCorner.CornerRadius = UDim.new(0, 6)
 -- THANH TAB
 local TabFrame = Instance.new("Frame", MainFrame)
 TabFrame.Size = UDim2.new(0.92, 0, 0, 30)
-TabFrame.Position = UDim2.new(0.04, 0, 0.12, 0)
+TabFrame.Position = UDim2.new(0.04, 0, 0.11, 0)
 TabFrame.BackgroundTransparency = 1
 
 local Tab1Btn = Instance.new("TextButton", TabFrame)
-Tab1Btn.Size = UDim2.new(0.48, 0, 1, 0)
-Tab1Btn.Text = "Log Tọa Độ Bất Thường"
+Tab1Btn.Size = UDim2.new(0.31, 0, 1, 0)
+Tab1Btn.Text = "Log & Tọa Độ"
 Tab1Btn.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
 Tab1Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
 Tab1Btn.Font = Enum.Font.SourceSansBold
-Tab1Btn.TextSize = 11
+Tab1Btn.TextSize = 10
 
 local Tab1Corner = Instance.new("UICorner", Tab1Btn)
 Tab1Corner.CornerRadius = UDim.new(0, 5)
 
 local Tab2Btn = Instance.new("TextButton", TabFrame)
-Tab2Btn.Size = UDim2.new(0.48, 0, 1, 0)
-Tab2Btn.Position = UDim2.new(0.52, 0, 0, 0)
-Tab2Btn.Text = "Danh Sách NPC"
+Tab2Btn.Size = UDim2.new(0.31, 0, 1, 0)
+Tab2Btn.Position = UDim2.new(0.34, 0, 0, 0)
+Tab2Btn.Text = "NPC Tracker"
 Tab2Btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 Tab2Btn.TextColor3 = Color3.fromRGB(200, 200, 200)
 Tab2Btn.Font = Enum.Font.SourceSansBold
-Tab2Btn.TextSize = 11
+Tab2Btn.TextSize = 10
 
 local Tab2Corner = Instance.new("UICorner", Tab2Btn)
 Tab2Corner.CornerRadius = UDim.new(0, 5)
 
+local Tab3Btn = Instance.new("TextButton", TabFrame)
+Tab3Btn.Size = UDim2.new(0.31, 0, 1, 0)
+Tab3Btn.Position = UDim2.new(0.68, 0, 0, 0)
+Tab3Btn.Text = "Model & Khối"
+Tab3Btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+Tab3Btn.TextColor3 = Color3.fromRGB(200, 200, 200)
+Tab3Btn.Font = Enum.Font.SourceSansBold
+Tab3Btn.TextSize = 10
+
+local Tab3Corner = Instance.new("UICorner", Tab3Btn)
+Tab3Corner.CornerRadius = UDim.new(0, 5)
+
 -- PAGES
-local Page1 = Instance.new("Frame", MainFrame) -- Tab Log Bất Thường
-Page1.Size = UDim2.new(0.92, 0, 0.74, 0)
-Page1.Position = UDim2.new(0.04, 0, 0.23, 0)
+local Page1 = Instance.new("Frame", MainFrame)
+Page1.Size = UDim2.new(0.92, 0, 0.77, 0)
+Page1.Position = UDim2.new(0.04, 0, 0.20, 0)
 Page1.BackgroundTransparency = 1
 
-local Page2 = Instance.new("Frame", MainFrame) -- Tab NPC Tracker
-Page2.Size = UDim2.new(0.92, 0, 0.74, 0)
-Page2.Position = UDim2.new(0.04, 0, 0.23, 0)
+local Page2 = Instance.new("Frame", MainFrame)
+Page2.Size = UDim2.new(0.92, 0, 0.77, 0)
+Page2.Position = UDim2.new(0.04, 0, 0.20, 0)
 Page2.BackgroundTransparency = 1
 Page2.Visible = false
 
-Tab1Btn.MouseButton1Click:Connect(function()
-    Page1.Visible = true; Page2.Visible = false
-    Tab1Btn.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
-    Tab2Btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-end)
+local Page3 = Instance.new("Frame", MainFrame)
+Page3.Size = UDim2.new(0.92, 0, 0.77, 0)
+Page3.Position = UDim2.new(0.04, 0, 0.20, 0)
+Page3.BackgroundTransparency = 1
+Page3.Visible = false
 
-Tab2Btn.MouseButton1Click:Connect(function()
-    Page1.Visible = false; Page2.Visible = true
-    Tab2Btn.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
+local function switchTab(activePage, activeBtn)
+    Page1.Visible = false; Page2.Visible = false; Page3.Visible = false
     Tab1Btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-end)
+    Tab2Btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    Tab3Btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+
+    activePage.Visible = true
+    activeBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
+end
+
+Tab1Btn.MouseButton1Click:Connect(function() switchTab(Page1, Tab1Btn) end)
+Tab2Btn.MouseButton1Click:Connect(function() switchTab(Page2, Tab2Btn) end)
+Tab3Btn.MouseButton1Click:Connect(function() switchTab(Page3, Tab3Btn) end)
 
 ---------------------------------------------------------
--- TAB 1: HIỂN THỊ LOG TỌA ĐỘ BẤT THƯỜNG
+-- TAB 1: LOG TỌA ĐỘ BẤT THƯỜNG + SPAWN
 ---------------------------------------------------------
 local RealtimeText = Instance.new("TextLabel", Page1)
-RealtimeText.Size = UDim2.new(1, 0, 0, 25)
-RealtimeText.Text = "Tọa độ hiện tại: 0, 0, 0"
+RealtimeText.Size = UDim2.new(1, 0, 0, 22)
+RealtimeText.Text = "Pos Hiện Tại: 0, 0, 0"
 RealtimeText.TextColor3 = Color3.fromRGB(0, 255, 150)
 RealtimeText.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 RealtimeText.Font = Enum.Font.Code
@@ -122,10 +149,34 @@ RealtimeText.TextSize = 10
 local RealtimeCorner = Instance.new("UICorner", RealtimeText)
 RealtimeCorner.CornerRadius = UDim.new(0, 4)
 
+local SavePosBtn = Instance.new("TextButton", Page1)
+SavePosBtn.Size = UDim2.new(0.48, 0, 0, 25)
+SavePosBtn.Position = UDim2.new(0, 0, 0.1, 0)
+SavePosBtn.Text = "Lưu Vị Trí Hiện Tại"
+SavePosBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 100)
+SavePosBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+SavePosBtn.Font = Enum.Font.SourceSansBold
+SavePosBtn.TextSize = 10
+
+local SaveCorner = Instance.new("UICorner", SavePosBtn)
+SaveCorner.CornerRadius = UDim.new(0, 4)
+
+local FindSpawnBtn = Instance.new("TextButton", Page1)
+FindSpawnBtn.Size = UDim2.new(0.48, 0, 0, 25)
+FindSpawnBtn.Position = UDim2.new(0.52, 0, 0.1, 0)
+FindSpawnBtn.Text = "Tìm Pos Spawn Map"
+FindSpawnBtn.BackgroundColor3 = Color3.fromRGB(150, 100, 0)
+FindSpawnBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+FindSpawnBtn.Font = Enum.Font.SourceSansBold
+FindSpawnBtn.TextSize = 10
+
+local FindCorner = Instance.new("UICorner", FindSpawnBtn)
+FindCorner.CornerRadius = UDim.new(0, 4)
+
 local LogScroll = Instance.new("ScrollingFrame", Page1)
-LogScroll.Size = UDim2.new(1, 0, 0, 170)
-LogScroll.Position = UDim2.new(0, 0, 0.14, 0)
-LogScroll.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+LogScroll.Size = UDim2.new(1, 0, 0, 180)
+LogScroll.Position = UDim2.new(0, 0, 0.21, 0)
+LogScroll.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
 LogScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 LogScroll.ScrollBarThickness = 4
 
@@ -134,8 +185,8 @@ LogUIList.SortOrder = Enum.SortOrder.LayoutOrder
 LogUIList.Padding = UDim.new(0, 4)
 
 local LockToggleBtn = Instance.new("TextButton", Page1)
-LockToggleBtn.Size = UDim2.new(1, 0, 0, 28)
-LockToggleBtn.Position = UDim2.new(0, 0, 0.88, 0)
+LockToggleBtn.Size = UDim2.new(1, 0, 0, 26)
+LockToggleBtn.Position = UDim2.new(0, 0, 0.89, 0)
 LockToggleBtn.Text = "Khóa Vị Trí Vừa Chọn: OFF"
 LockToggleBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
 LockToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -146,17 +197,69 @@ local LockCorner = Instance.new("UICorner", LockToggleBtn)
 LockCorner.CornerRadius = UDim.new(0, 4)
 
 ---------------------------------------------------------
--- TAB 2: NPC TRACKER
+-- TAB 2: NPC TRACKER & ESP
 ---------------------------------------------------------
+local ESPToggleBtn = Instance.new("TextButton", Page2)
+ESPToggleBtn.Size = UDim2.new(1, 0, 0, 26)
+ESPToggleBtn.Position = UDim2.new(0, 0, 0, 0)
+ESPToggleBtn.Text = "Bật/Tắt ESP Toàn Bộ NPC: OFF"
+ESPToggleBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+ESPToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ESPToggleBtn.Font = Enum.Font.SourceSansBold
+ESPToggleBtn.TextSize = 11
+
+local ESPCorner = Instance.new("UICorner", ESPToggleBtn)
+ESPCorner.CornerRadius = UDim.new(0, 4)
+
 local NPCScroll = Instance.new("ScrollingFrame", Page2)
-NPCScroll.Size = UDim2.new(1, 0, 1, 0)
-NPCScroll.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+NPCScroll.Size = UDim2.new(1, 0, 0, 230)
+NPCScroll.Position = UDim2.new(0, 0, 0.12, 0)
+NPCScroll.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
 NPCScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 NPCScroll.ScrollBarThickness = 4
 
 local NPCUIList = Instance.new("UIListLayout", NPCScroll)
 NPCUIList.SortOrder = Enum.SortOrder.LayoutOrder
-NPCUIList.Padding = UDim.new(0, 5)
+NPCUIList.Padding = UDim.new(0, 4)
+
+---------------------------------------------------------
+-- TAB 3: MODEL & BLOCK TRACKER
+---------------------------------------------------------
+local SearchBox = Instance.new("TextBox", Page3)
+SearchBox.Size = UDim2.new(0.6, 0, 0, 25)
+SearchBox.Position = UDim2.new(0, 0, 0, 0)
+SearchBox.PlaceholderText = "Lọc tên Model / Khối..."
+SearchBox.Text = ""
+SearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+SearchBox.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+SearchBox.Font = Enum.Font.SourceSans
+SearchBox.TextSize = 11
+
+local SearchCorner = Instance.new("UICorner", SearchBox)
+SearchCorner.CornerRadius = UDim.new(0, 4)
+
+local DistBtn = Instance.new("TextButton", Page3)
+DistBtn.Size = UDim2.new(0.38, 0, 0, 25)
+DistBtn.Position = UDim2.new(0.62, 0, 0, 0)
+DistBtn.Text = "Bán Kính: 150m"
+DistBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
+DistBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+DistBtn.Font = Enum.Font.SourceSansBold
+DistBtn.TextSize = 10
+
+local DistCorner = Instance.new("UICorner", DistBtn)
+DistCorner.CornerRadius = UDim.new(0, 4)
+
+local ModelScroll = Instance.new("ScrollingFrame", Page3)
+ModelScroll.Size = UDim2.new(1, 0, 0, 230)
+ModelScroll.Position = UDim2.new(0, 0, 0.12, 0)
+ModelScroll.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+ModelScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+ModelScroll.ScrollBarThickness = 4
+
+local ModelUIList = Instance.new("UIListLayout", ModelScroll)
+ModelUIList.SortOrder = Enum.SortOrder.LayoutOrder
+ModelUIList.Padding = UDim.new(0, 4)
 
 -- NÚT THU NHỎ
 local OpenBtn = Instance.new("TextButton", ScreenGui)
@@ -178,7 +281,7 @@ CloseBtn.MouseButton1Click:Connect(function() MainFrame.Visible = false; OpenBtn
 OpenBtn.MouseButton1Click:Connect(function() MainFrame.Visible = true; OpenBtn.Visible = false end)
 
 ---------------------------------------------------------
--- LOGIC BẮT DỊCH CHUYỂN BẤT THƯỜNG
+-- LOGIC BẢNG TOÀN CỤC
 ---------------------------------------------------------
 local function teleportTo(pos)
     local char = LocalPlayer.Character
@@ -186,6 +289,7 @@ local function teleportTo(pos)
     if hrp then hrp.CFrame = CFrame.new(pos) end
 end
 
+-- LOGIC TAB 1
 LockToggleBtn.MouseButton1Click:Connect(function()
     _G.AutoLock = not _G.AutoLock
     if _G.AutoLock then
@@ -201,16 +305,14 @@ RunService.Stepped:Connect(function()
     if _G.AutoLock then teleportTo(lockTargetPos) end
 end)
 
--- Ghi log dịch chuyển bất thường
-local function addAbnormalLog(fromPos, toPos)
+local function addCustomLog(titleText, pos, color)
     local timeStr = os.date("%X")
-    local fromStr = string.format("%.1f, %.1f, %.1f", fromPos.X, fromPos.Y, fromPos.Z)
-    local toStr = string.format("%.1f, %.1f, %.1f", toPos.X, toPos.Y, toPos.Z)
-    local copyText = string.format("[%s] Từ: (%s) -> Đến: (%s)", timeStr, fromStr, toStr)
+    local posStr = string.format("%.1f, %.1f, %.1f", pos.X, pos.Y, pos.Z)
+    local copyText = string.format("[%s] %s: (%s)", timeStr, titleText, posStr)
 
     local ItemFrame = Instance.new("Frame", LogScroll)
-    ItemFrame.Size = UDim2.new(1, -5, 0, 48)
-    ItemFrame.BackgroundColor3 = Color3.fromRGB(35, 20, 20)
+    ItemFrame.Size = UDim2.new(1, -5, 0, 42)
+    ItemFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 
     local ItemCorner = Instance.new("UICorner", ItemFrame)
     ItemCorner.CornerRadius = UDim.new(0, 4)
@@ -218,14 +320,13 @@ local function addAbnormalLog(fromPos, toPos)
     local LogLabel = Instance.new("TextLabel", ItemFrame)
     LogLabel.Size = UDim2.new(0.62, 0, 1, 0)
     LogLabel.Position = UDim2.new(0.02, 0, 0, 0)
-    LogLabel.Text = string.format("[%s] BẤT THƯỜNG!\nTừ: (%s)\nĐến: (%s)", timeStr, fromStr, toStr)
-    LogLabel.TextColor3 = Color3.fromRGB(255, 120, 120)
+    LogLabel.Text = string.format("[%s] %s\nPos: (%s)", timeStr, titleText, posStr)
+    LogLabel.TextColor3 = color
     LogLabel.BackgroundTransparency = 1
     LogLabel.Font = Enum.Font.SourceSans
     LogLabel.TextSize = 10
     LogLabel.TextXAlignment = Enum.TextXAlignment.Left
 
-    -- Nút TP lại điểm Bất Thường
     local TPBackBtn = Instance.new("TextButton", ItemFrame)
     TPBackBtn.Size = UDim2.new(0.16, 0, 0.6, 0)
     TPBackBtn.Position = UDim2.new(0.65, 0, 0.2, 0)
@@ -238,7 +339,6 @@ local function addAbnormalLog(fromPos, toPos)
     local TPCorner = Instance.new("UICorner", TPBackBtn)
     TPCorner.CornerRadius = UDim.new(0, 4)
 
-    -- Nút Copy Log
     local CopyLogBtn = Instance.new("TextButton", ItemFrame)
     CopyLogBtn.Size = UDim2.new(0.15, 0, 0.6, 0)
     CopyLogBtn.Position = UDim2.new(0.83, 0, 0.2, 0)
@@ -252,8 +352,8 @@ local function addAbnormalLog(fromPos, toPos)
     CopyCorner.CornerRadius = UDim.new(0, 4)
 
     TPBackBtn.MouseButton1Click:Connect(function()
-        lockTargetPos = toPos
-        teleportTo(toPos)
+        lockTargetPos = pos
+        teleportTo(pos)
     end)
 
     CopyLogBtn.MouseButton1Click:Connect(function()
@@ -266,7 +366,23 @@ local function addAbnormalLog(fromPos, toPos)
     LogScroll.CanvasSize = UDim2.new(0, 0, 0, LogUIList.AbsoluteContentSize.Y)
 end
 
--- Quét kiểm tra nhảy tọa độ (> 30 studs trong 0.1s)
+SavePosBtn.MouseButton1Click:Connect(function()
+    local char = LocalPlayer.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    if hrp then addCustomLog("LƯU POS BẢN THÂN", hrp.Position, Color3.fromRGB(0, 255, 150)) end
+end)
+
+FindSpawnBtn.MouseButton1Click:Connect(function()
+    local spawnFound = false
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if obj:IsA("SpawnLocation") then
+            addCustomLog("SPAWN MAP: " .. obj.Name, obj.Position, Color3.fromRGB(255, 200, 50))
+            spawnFound = true
+        end
+    end
+    if not spawnFound then addCustomLog("KHÔNG TÌM THẤY SPAWNLOCATION", Vector3.new(0, 0, 0), Color3.fromRGB(255, 100, 100)) end
+end)
+
 local lastPosition = nil
 task.spawn(function()
     while task.wait(0.1) do
@@ -274,12 +390,12 @@ task.spawn(function()
         local hrp = char and char:FindFirstChild("HumanoidRootPart")
         if hrp then
             local currentPos = hrp.Position
-            RealtimeText.Text = string.format("Tọa độ hiện tại: %.1f, %.1f, %.1f", currentPos.X, currentPos.Y, currentPos.Z)
+            RealtimeText.Text = string.format("Pos Hiện Tại: %.1f, %.1f, %.1f", currentPos.X, currentPos.Y, currentPos.Z)
             
             if lastPosition then
                 local distance = (currentPos - lastPosition).Magnitude
                 if distance >= 30 then
-                    addAbnormalLog(lastPosition, currentPos)
+                    addCustomLog("BẤT THƯỜNG! VĂNG TỚI", currentPos, Color3.fromRGB(255, 100, 100))
                 end
             end
             lastPosition = currentPos
@@ -287,9 +403,7 @@ task.spawn(function()
     end
 end)
 
----------------------------------------------------------
--- LOGIC NPC TRACKER
----------------------------------------------------------
+-- LOGIC TAB 2: NPC
 local function isNPC(model)
     if model:IsA("Model") and model:FindFirstChildOfClass("Humanoid") and model:FindFirstChild("HumanoidRootPart") then
         if not Players:GetPlayerFromCharacter(model) then return true end
@@ -297,11 +411,60 @@ local function isNPC(model)
     return false
 end
 
+local function applyNPCESP(model)
+    if not _G.NPCESP or not isNPC(model) then return end
+    local hrp = model:FindFirstChild("HumanoidRootPart")
+    if not hrp or npcESPFolders[model] then return end
+
+    local folder = Instance.new("Folder", CoreGui)
+    local highlight = Instance.new("Highlight", folder)
+    highlight.Adornee = model
+    highlight.FillColor = Color3.fromRGB(255, 50, 50)
+    highlight.FillTransparency = 0.5
+    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+
+    local billboard = Instance.new("BillboardGui", folder)
+    billboard.Adornee = hrp
+    billboard.Size = UDim2.new(0, 100, 0, 30)
+    billboard.StudsOffset = Vector3.new(0, 3, 0)
+    billboard.AlwaysOnTop = true
+
+    local nameLabel = Instance.new("TextLabel", billboard)
+    nameLabel.Size = UDim2.new(1, 0, 1, 0)
+    nameLabel.Text = model.Name
+    nameLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Font = Enum.Font.SourceSansBold
+    nameLabel.TextSize = 12
+
+    npcESPFolders[model] = folder
+end
+
+local function removeNPCESP(model)
+    if npcESPFolders[model] then
+        npcESPFolders[model]:Destroy()
+        npcESPFolders[model] = nil
+    end
+end
+
+ESPToggleBtn.MouseButton1Click:Connect(function()
+    _G.NPCESP = not _G.NPCESP
+    ESPToggleBtn.Text = _G.NPCESP and "Bật/Tắt ESP Toàn Bộ NPC: ON" or "Bật/Tắt ESP Toàn Bộ NPC: OFF"
+    ESPToggleBtn.BackgroundColor3 = _G.NPCESP and Color3.fromRGB(50, 180, 50) or Color3.fromRGB(180, 50, 50)
+
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        if isNPC(obj) then
+            if _G.NPCESP then applyNPCESP(obj) else removeNPCESP(obj) end
+        end
+    end
+end)
+
 local function registerNPCSpawn(model)
     if isNPC(model) and not npcSpawnPositions[model] then
         local hrp = model:FindFirstChild("HumanoidRootPart")
         if hrp then npcSpawnPositions[model] = hrp.Position end
     end
+    if _G.NPCESP then applyNPCESP(model) end
 end
 
 for _, obj in pairs(Workspace:GetDescendants()) do registerNPCSpawn(obj) end
@@ -316,17 +479,15 @@ local function updateNPCList()
         if isNPC(obj) then
             local hum = obj:FindFirstChildOfClass("Humanoid")
             local hrp = obj:FindFirstChild("HumanoidRootPart")
-            
             if hum and hrp and hum.Health > 0 then
                 local currentPos = hrp.Position
                 local spawnPos = npcSpawnPositions[obj] or currentPos
-                
-                local currentPosStr = string.format("%.1f, %.1f, %.1f", currentPos.X, currentPos.Y, currentPos.Z)
-                local spawnPosStr = string.format("%.1f, %.1f, %.1f", spawnPos.X, spawnPos.Y, spawnPos.Z)
+                local posStr = string.format("%.1f, %.1f, %.1f", currentPos.X, currentPos.Y, currentPos.Z)
+                local spawnStr = string.format("%.1f, %.1f, %.1f", spawnPos.X, spawnPos.Y, spawnPos.Z)
 
                 local ItemFrame = Instance.new("Frame", NPCScroll)
-                ItemFrame.Size = UDim2.new(1, -5, 0, 50)
-                ItemFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+                ItemFrame.Size = UDim2.new(1, -5, 0, 48)
+                ItemFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 
                 local ItemCorner = Instance.new("UICorner", ItemFrame)
                 ItemCorner.CornerRadius = UDim.new(0, 4)
@@ -334,7 +495,7 @@ local function updateNPCList()
                 local InfoLabel = Instance.new("TextLabel", ItemFrame)
                 InfoLabel.Size = UDim2.new(0.78, 0, 1, 0)
                 InfoLabel.Position = UDim2.new(0.02, 0, 0, 0)
-                InfoLabel.Text = string.format("Tên: %s | HP: %d/%d\nPos: (%s)\nSpawn: (%s)", obj.Name, math.floor(hum.Health), math.floor(hum.MaxHealth), currentPosStr, spawnPosStr)
+                InfoLabel.Text = string.format("Tên: %s | HP: %d/%d\nPos: (%s)\nSpawn: (%s)", obj.Name, math.floor(hum.Health), math.floor(hum.MaxHealth), posStr, spawnStr)
                 InfoLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
                 InfoLabel.BackgroundTransparency = 1
                 InfoLabel.Font = Enum.Font.SourceSans
@@ -362,10 +523,157 @@ local function updateNPCList()
     NPCScroll.CanvasSize = UDim2.new(0, 0, 0, NPCUIList.AbsoluteContentSize.Y)
 end
 
+-- LOGIC TAB 3: MODEL & BLOCK
+local distances = {100, 150, 300, 500}
+local currentDistIndex = 2
+
+DistBtn.MouseButton1Click:Connect(function()
+    currentDistIndex = currentDistIndex + 1
+    if currentDistIndex > #distances then currentDistIndex = 1 end
+    maxScanDistance = distances[currentDistIndex]
+    DistBtn.Text = "Bán Kính: " .. maxScanDistance .. "m"
+end)
+
+SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+    filterKeyword = string.lower(SearchBox.Text)
+end)
+
+local function getObjectPos(obj)
+    if obj:IsA("BasePart") then return obj.Position end
+    if obj:IsA("Model") then
+        if obj.PrimaryPart then return obj.PrimaryPart.Position end
+        local p = obj:FindFirstChildOfClass("BasePart")
+        if p then return p.Position end
+    end
+    return nil
+end
+
+local function applyModelESP(obj, color)
+    if modelESPFolders[obj] then return end
+    local folder = Instance.new("Folder", CoreGui)
+    local highlight = Instance.new("Highlight", folder)
+    highlight.Adornee = obj
+    highlight.FillColor = color
+    highlight.FillTransparency = 0.6
+
+    local targetPart = obj:IsA("BasePart") and obj or (obj.PrimaryPart or obj:FindFirstChildOfClass("BasePart"))
+    if targetPart then
+        local billboard = Instance.new("BillboardGui", folder)
+        billboard.Adornee = targetPart
+        billboard.Size = UDim2.new(0, 120, 0, 30)
+        billboard.StudsOffset = Vector3.new(0, 2, 0)
+        billboard.AlwaysOnTop = true
+
+        local label = Instance.new("TextLabel", billboard)
+        label.Size = UDim2.new(1, 0, 1, 0)
+        label.Text = obj.Name
+        label.TextColor3 = color
+        label.BackgroundTransparency = 1
+        label.Font = Enum.Font.SourceSansBold
+        label.TextSize = 11
+    end
+    modelESPFolders[obj] = folder
+end
+
+local function removeModelESP(obj)
+    if modelESPFolders[obj] then
+        modelESPFolders[obj]:Destroy()
+        modelESPFolders[obj] = nil
+    end
+end
+
+local function updateModelList()
+    local char = LocalPlayer.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+
+    for _, child in pairs(ModelScroll:GetChildren()) do
+        if child:IsA("Frame") then child:Destroy() end
+    end
+
+    local myPos = hrp.Position
+    for _, obj in pairs(Workspace:GetChildren()) do
+        if obj ~= char and not Players:GetPlayerFromCharacter(obj) and not isNPC(obj) then
+            local objPos = getObjectPos(obj)
+            if objPos then
+                local dist = (objPos - myPos).Magnitude
+                if dist <= maxScanDistance then
+                    local nameMatch = (filterKeyword == "") or string.find(string.lower(obj.Name), filterKeyword)
+                    if nameMatch then
+                        local isModel = obj:IsA("Model")
+                        local themeColor = isModel and Color3.fromRGB(255, 170, 0) or Color3.fromRGB(0, 200, 255)
+                        local posStr = string.format("%.1f, %.1f, %.1f", objPos.X, objPos.Y, objPos.Z)
+
+                        local ItemFrame = Instance.new("Frame", ModelScroll)
+                        ItemFrame.Size = UDim2.new(1, -5, 0, 45)
+                        ItemFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+
+                        local ItemCorner = Instance.new("UICorner", ItemFrame)
+                        ItemCorner.CornerRadius = UDim.new(0, 4)
+
+                        local InfoLabel = Instance.new("TextLabel", ItemFrame)
+                        InfoLabel.Size = UDim2.new(0.55, 0, 1, 0)
+                        InfoLabel.Position = UDim2.new(0.02, 0, 0, 0)
+                        InfoLabel.Text = string.format("[%s] %s\nCách: %dm | Pos: (%s)", isModel and "MODEL" or "BLOCK", obj.Name, math.floor(dist), posStr)
+                        InfoLabel.TextColor3 = themeColor
+                        InfoLabel.BackgroundTransparency = 1
+                        InfoLabel.Font = Enum.Font.SourceSans
+                        InfoLabel.TextSize = 10
+                        InfoLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+                        local MESPBtn = Instance.new("TextButton", ItemFrame)
+                        MESPBtn.Size = UDim2.new(0.18, 0, 0.6, 0)
+                        MESPBtn.Position = UDim2.new(0.58, 0, 0.2, 0)
+                        MESPBtn.Text = modelESPFolders[obj] and "ESP: ON" or "ESP: OFF"
+                        MESPBtn.BackgroundColor3 = modelESPFolders[obj] and Color3.fromRGB(50, 180, 50) or Color3.fromRGB(70, 70, 70)
+                        MESPBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+                        MESPBtn.Font = Enum.Font.SourceSansBold
+                        MESPBtn.TextSize = 10
+
+                        local ESPCorner = Instance.new("UICorner", MESPBtn)
+                        ESPCorner.CornerRadius = UDim.new(0, 4)
+
+                        MESPBtn.MouseButton1Click:Connect(function()
+                            if modelESPFolders[obj] then
+                                removeModelESP(obj)
+                                MESPBtn.Text = "ESP: OFF"
+                                MESPBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+                            else
+                                applyModelESP(obj, themeColor)
+                                MESPBtn.Text = "ESP: ON"
+                                MESPBtn.BackgroundColor3 = Color3.fromRGB(50, 180, 50)
+                            end
+                        end)
+
+                        local TPBtn = Instance.new("TextButton", ItemFrame)
+                        TPBtn.Size = UDim2.new(0.18, 0, 0.6, 0)
+                        TPBtn.Position = UDim2.new(0.78, 0, 0.2, 0)
+                        TPBtn.Text = "TP Tới"
+                        TPBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
+                        TPBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+                        TPBtn.Font = Enum.Font.SourceSansBold
+                        TPBtn.TextSize = 10
+
+                        local TPCorner = Instance.new("UICorner", TPBtn)
+                        TPCorner.CornerRadius = UDim.new(0, 4)
+
+                        TPBtn.MouseButton1Click:Connect(function()
+                            teleportTo(objPos + Vector3.new(0, 3, 0))
+                        end)
+                    end
+                end
+            end
+        end
+    end
+    ModelScroll.CanvasSize = UDim2.new(0, 0, 0, ModelUIList.AbsoluteContentSize.Y)
+end
+
+-- VÒNG LẶP CẬP NHẬT GIAO DIỆN KHÔNG GÂY LAG
 task.spawn(function()
-    while task.wait(1) do
-        if MainFrame.Visible and Page2.Visible then
-            updateNPCList()
+    while task.wait(1.5) do
+        if MainFrame.Visible then
+            if Page2.Visible then updateNPCList() end
+            if Page3.Visible then updateModelList() end
         end
     end
 end)
