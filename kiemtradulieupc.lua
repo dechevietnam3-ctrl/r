@@ -1,4 +1,4 @@
--- Script All-In-One Optimized: Tracker Bất Thường + NPC ESP + Model/Block Tracker
+-- Script All-In-One Optimized: Tracker Bất Thường + NPC ESP + Model/Block Tracker (Nâng Cấp Bộ Lọc)
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
@@ -20,6 +20,10 @@ local modelESPFolders = {}
 
 local maxScanDistance = 150
 local filterKeyword = ""
+
+-- BỘ LỌC TAB 3
+local filterCategoryIndex = 1
+local filterCategories = {"Tất cả", "Vật lý", "Xuyên qua", "Có Script", "Nút / Tương tác"}
 
 -- KHỞI TẠO GUI CHÍNH
 local ScreenGui = Instance.new("ScreenGui")
@@ -224,12 +228,12 @@ NPCUIList.SortOrder = Enum.SortOrder.LayoutOrder
 NPCUIList.Padding = UDim.new(0, 4)
 
 ---------------------------------------------------------
--- TAB 3: MODEL & BLOCK TRACKER
+-- TAB 3: MODEL & BLOCK TRACKER (CÓ BỘ LỌC NÂNG CAO)
 ---------------------------------------------------------
 local SearchBox = Instance.new("TextBox", Page3)
-SearchBox.Size = UDim2.new(0.6, 0, 0, 25)
+SearchBox.Size = UDim2.new(0.48, 0, 0, 25)
 SearchBox.Position = UDim2.new(0, 0, 0, 0)
-SearchBox.PlaceholderText = "Lọc tên Model / Khối..."
+SearchBox.PlaceholderText = "Lọc tên..."
 SearchBox.Text = ""
 SearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 SearchBox.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
@@ -240,16 +244,28 @@ local SearchCorner = Instance.new("UICorner", SearchBox)
 SearchCorner.CornerRadius = UDim.new(0, 4)
 
 local DistBtn = Instance.new("TextButton", Page3)
-DistBtn.Size = UDim2.new(0.38, 0, 0, 25)
-DistBtn.Position = UDim2.new(0.62, 0, 0, 0)
+DistBtn.Size = UDim2.new(0.24, 0, 0, 25)
+DistBtn.Position = UDim2.new(0.50, 0, 0, 0)
 DistBtn.Text = "Bán Kính: 150m"
 DistBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
 DistBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 DistBtn.Font = Enum.Font.SourceSansBold
-DistBtn.TextSize = 10
+DistBtn.TextSize = 9
 
 local DistCorner = Instance.new("UICorner", DistBtn)
 DistCorner.CornerRadius = UDim.new(0, 4)
+
+local TypeFilterBtn = Instance.new("TextButton", Page3)
+TypeFilterBtn.Size = UDim2.new(0.24, 0, 0, 25)
+TypeFilterBtn.Position = UDim2.new(0.76, 0, 0, 0)
+TypeFilterBtn.Text = "Lọc: Tất cả"
+TypeFilterBtn.BackgroundColor3 = Color3.fromRGB(120, 0, 215)
+TypeFilterBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+TypeFilterBtn.Font = Enum.Font.SourceSansBold
+TypeFilterBtn.TextSize = 9
+
+local FilterCorner = Instance.new("UICorner", TypeFilterBtn)
+FilterCorner.CornerRadius = UDim.new(0, 4)
 
 local ModelScroll = Instance.new("ScrollingFrame", Page3)
 ModelScroll.Size = UDim2.new(1, 0, 0, 230)
@@ -449,7 +465,6 @@ local function applyNPCESP(model)
 
     npcESPFolders[model] = folder
 
-    -- Dọn dẹp ESP tự động khi NPC bị xóa
     model.AncestryChanged:Connect(function(_, parent)
         if not parent then removeNPCESP(model) end
     end)
@@ -535,7 +550,7 @@ local function updateNPCList()
     NPCScroll.CanvasSize = UDim2.new(0, 0, 0, NPCUIList.AbsoluteContentSize.Y)
 end
 
--- LOGIC TAB 3: MODEL & BLOCK
+-- LOGIC TAB 3: MODEL & BLOCK VỚI HÀM LỌC TÍNH NĂNG
 local distances = {100, 150, 300, 500}
 local currentDistIndex = 2
 
@@ -543,6 +558,11 @@ DistBtn.MouseButton1Click:Connect(function()
     currentDistIndex = (currentDistIndex % #distances) + 1
     maxScanDistance = distances[currentDistIndex]
     DistBtn.Text = "Bán Kính: " .. maxScanDistance .. "m"
+end)
+
+TypeFilterBtn.MouseButton1Click:Connect(function()
+    filterCategoryIndex = (filterCategoryIndex % #filterCategories) + 1
+    TypeFilterBtn.Text = "Lọc: " .. filterCategories[filterCategoryIndex]
 end)
 
 SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
@@ -557,6 +577,36 @@ local function getObjectPos(obj)
         if p then return p.Position end
     end
     return nil
+end
+
+-- HÀM KIỂM TRA ĐIỀU KIỆN LỌC
+local function matchesCategoryFilter(obj)
+    local cat = filterCategories[filterCategoryIndex]
+    if cat == "Tất cả" then
+        return true
+    elseif cat == "Vật lý" then
+        if obj:IsA("BasePart") then return obj.CanCollide end
+        if obj:IsA("Model") then
+            for _, p in ipairs(obj:GetDescendants()) do
+                if p:IsA("BasePart") and p.CanCollide then return true end
+            end
+        end
+        return false
+    elseif cat == "Xuyên qua" then
+        if obj:IsA("BasePart") then return not obj.CanCollide end
+        if obj:IsA("Model") then
+            local p = obj.PrimaryPart or obj:FindFirstChildOfClass("BasePart")
+            if p then return not p.CanCollide end
+        end
+        return false
+    elseif cat == "Có Script" then
+        return obj:FindFirstChildWhichIsA("LuaSourceContainer", true) ~= nil
+    elseif cat == "Nút / Tương tác" then
+        return obj:FindFirstChildOfClass("ClickDetector", true) ~= nil 
+            or obj:FindFirstChildOfClass("ProximityPrompt", true) ~= nil
+            or obj:FindFirstChildOfClass("TouchTransmitter", true) ~= nil
+    end
+    return true
 end
 
 local function removeModelESP(obj)
@@ -616,7 +666,9 @@ local function updateModelList()
                 local dist = (objPos - myPos).Magnitude
                 if dist <= maxScanDistance then
                     local nameMatch = (filterKeyword == "") or string.find(string.lower(obj.Name), filterKeyword)
-                    if nameMatch then
+                    local categoryMatch = matchesCategoryFilter(obj)
+                    
+                    if nameMatch and categoryMatch then
                         local isModel = obj:IsA("Model")
                         local themeColor = isModel and Color3.fromRGB(255, 170, 0) or Color3.fromRGB(0, 200, 255)
 
