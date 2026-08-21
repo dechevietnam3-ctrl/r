@@ -1,4 +1,4 @@
--- Script All-In-One Optimized: Tracker Bất Thường + NPC ESP + Model/Block Tracker (Nâng Cấp Bộ Lọc)
+-- Script All-In-One Optimized: Log/TP + NPC ESP + Model Filter + Player & Item/Damage Inspector
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
@@ -20,8 +20,6 @@ local modelESPFolders = {}
 
 local maxScanDistance = 150
 local filterKeyword = ""
-
--- BỘ LỌC TAB 3
 local filterCategoryIndex = 1
 local filterCategories = {"Tất cả", "Vật lý", "Xuyên qua", "Có Script", "Nút / Tương tác"}
 
@@ -32,7 +30,7 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = CoreGui
 
 local MainFrame = Instance.new("Frame", ScreenGui)
-MainFrame.Size = UDim2.new(0, 420, 0, 380)
+MainFrame.Size = UDim2.new(0, 440, 0, 400)
 MainFrame.Position = UDim2.new(0.05, 0, 0.2, 0)
 MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 MainFrame.Active = true
@@ -44,7 +42,7 @@ UICorner.CornerRadius = UDim.new(0, 8)
 -- Thanh Tiêu Đề
 local Title = Instance.new("TextLabel", MainFrame)
 Title.Size = UDim2.new(1, -40, 0, 35)
-Title.Text = "  ULTIMATE TRACKER & ESP SYSTEM"
+Title.Text = "  ULTIMATE TRACKER & ITEM INSPECTOR"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextSize = 13
 Title.Font = Enum.Font.SourceSansBold
@@ -67,70 +65,62 @@ CloseBtn.TextSize = 14
 local CloseCorner = Instance.new("UICorner", CloseBtn)
 CloseCorner.CornerRadius = UDim.new(0, 6)
 
--- THANH TAB
+-- THANH TAB (4 TAB)
 local TabFrame = Instance.new("Frame", MainFrame)
 TabFrame.Size = UDim2.new(0.92, 0, 0, 30)
-TabFrame.Position = UDim2.new(0.04, 0, 0.11, 0)
+TabFrame.Position = UDim2.new(0.04, 0, 0.10, 0)
 TabFrame.BackgroundTransparency = 1
 
-local Tab1Btn = Instance.new("TextButton", TabFrame)
-Tab1Btn.Size = UDim2.new(0.31, 0, 1, 0)
-Tab1Btn.Text = "Log & Tọa Độ"
-Tab1Btn.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
-Tab1Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-Tab1Btn.Font = Enum.Font.SourceSansBold
-Tab1Btn.TextSize = 10
+local function createTabBtn(text, posX, isActive)
+    local btn = Instance.new("TextButton", TabFrame)
+    btn.Size = UDim2.new(0.235, 0, 1, 0)
+    btn.Position = UDim2.new(posX, 0, 0, 0)
+    btn.Text = text
+    btn.BackgroundColor3 = isActive and Color3.fromRGB(0, 120, 215) or Color3.fromRGB(35, 35, 35)
+    btn.TextColor3 = isActive and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(200, 200, 200)
+    btn.Font = Enum.Font.SourceSansBold
+    btn.TextSize = 9
 
-local Tab1Corner = Instance.new("UICorner", Tab1Btn)
-Tab1Corner.CornerRadius = UDim.new(0, 5)
+    local c = Instance.new("UICorner", btn)
+    c.CornerRadius = UDim.new(0, 5)
+    return btn
+end
 
-local Tab2Btn = Instance.new("TextButton", TabFrame)
-Tab2Btn.Size = UDim2.new(0.31, 0, 1, 0)
-Tab2Btn.Position = UDim2.new(0.34, 0, 0, 0)
-Tab2Btn.Text = "NPC Tracker"
-Tab2Btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-Tab2Btn.TextColor3 = Color3.fromRGB(200, 200, 200)
-Tab2Btn.Font = Enum.Font.SourceSansBold
-Tab2Btn.TextSize = 10
-
-local Tab2Corner = Instance.new("UICorner", Tab2Btn)
-Tab2Corner.CornerRadius = UDim.new(0, 5)
-
-local Tab3Btn = Instance.new("TextButton", TabFrame)
-Tab3Btn.Size = UDim2.new(0.31, 0, 1, 0)
-Tab3Btn.Position = UDim2.new(0.68, 0, 0, 0)
-Tab3Btn.Text = "Model & Khối"
-Tab3Btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-Tab3Btn.TextColor3 = Color3.fromRGB(200, 200, 200)
-Tab3Btn.Font = Enum.Font.SourceSansBold
-Tab3Btn.TextSize = 10
-
-local Tab3Corner = Instance.new("UICorner", Tab3Btn)
-Tab3Corner.CornerRadius = UDim.new(0, 5)
+local Tab1Btn = createTabBtn("Log / Tọa Độ", 0, true)
+local Tab2Btn = createTabBtn("NPC ESP", 0.255, false)
+local Tab3Btn = createTabBtn("Model / Khối", 0.51, false)
+local Tab4Btn = createTabBtn("Player / Item", 0.765, false)
 
 -- PAGES
 local Page1 = Instance.new("Frame", MainFrame)
-Page1.Size = UDim2.new(0.92, 0, 0.77, 0)
-Page1.Position = UDim2.new(0.04, 0, 0.20, 0)
+Page1.Size = UDim2.new(0.92, 0, 0.78, 0)
+Page1.Position = UDim2.new(0.04, 0, 0.19, 0)
 Page1.BackgroundTransparency = 1
 
 local Page2 = Instance.new("Frame", MainFrame)
-Page2.Size = UDim2.new(0.92, 0, 0.77, 0)
-Page2.Position = UDim2.new(0.04, 0, 0.20, 0)
+Page2.Size = UDim2.new(0.92, 0, 0.78, 0)
+Page2.Position = UDim2.new(0.04, 0, 0.19, 0)
 Page2.BackgroundTransparency = 1
 Page2.Visible = false
 
 local Page3 = Instance.new("Frame", MainFrame)
-Page3.Size = UDim2.new(0.92, 0, 0.77, 0)
-Page3.Position = UDim2.new(0.04, 0, 0.20, 0)
+Page3.Size = UDim2.new(0.92, 0, 0.78, 0)
+Page3.Position = UDim2.new(0.04, 0, 0.19, 0)
 Page3.BackgroundTransparency = 1
 Page3.Visible = false
 
+local Page4 = Instance.new("Frame", MainFrame)
+Page4.Size = UDim2.new(0.92, 0, 0.78, 0)
+Page4.Position = UDim2.new(0.04, 0, 0.19, 0)
+Page4.BackgroundTransparency = 1
+Page4.Visible = false
+
 local function switchTab(activePage, activeBtn)
-    Page1.Visible = false; Page2.Visible = false; Page3.Visible = false
+    Page1.Visible = false; Page2.Visible = false; Page3.Visible = false; Page4.Visible = false
     Tab1Btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
     Tab2Btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
     Tab3Btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    Tab4Btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 
     activePage.Visible = true
     activeBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
@@ -139,6 +129,7 @@ end
 Tab1Btn.MouseButton1Click:Connect(function() switchTab(Page1, Tab1Btn) end)
 Tab2Btn.MouseButton1Click:Connect(function() switchTab(Page2, Tab2Btn) end)
 Tab3Btn.MouseButton1Click:Connect(function() switchTab(Page3, Tab3Btn) end)
+Tab4Btn.MouseButton1Click:Connect(function() switchTab(Page4, Tab4Btn) end)
 
 ---------------------------------------------------------
 -- TAB 1: LOG TỌA ĐỘ
@@ -156,7 +147,7 @@ RealtimeCorner.CornerRadius = UDim.new(0, 4)
 
 local SavePosBtn = Instance.new("TextButton", Page1)
 SavePosBtn.Size = UDim2.new(0.48, 0, 0, 25)
-SavePosBtn.Position = UDim2.new(0, 0, 0.1, 0)
+SavePosBtn.Position = UDim2.new(0, 0, 0.09, 0)
 SavePosBtn.Text = "Lưu Vị Trí Hiện Tại"
 SavePosBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 100)
 SavePosBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -168,7 +159,7 @@ SaveCorner.CornerRadius = UDim.new(0, 4)
 
 local FindSpawnBtn = Instance.new("TextButton", Page1)
 FindSpawnBtn.Size = UDim2.new(0.48, 0, 0, 25)
-FindSpawnBtn.Position = UDim2.new(0.52, 0, 0.1, 0)
+FindSpawnBtn.Position = UDim2.new(0.52, 0, 0.09, 0)
 FindSpawnBtn.Text = "Tìm Pos Spawn Map"
 FindSpawnBtn.BackgroundColor3 = Color3.fromRGB(150, 100, 0)
 FindSpawnBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -179,8 +170,8 @@ local FindCorner = Instance.new("UICorner", FindSpawnBtn)
 FindCorner.CornerRadius = UDim.new(0, 4)
 
 local LogScroll = Instance.new("ScrollingFrame", Page1)
-LogScroll.Size = UDim2.new(1, 0, 0, 180)
-LogScroll.Position = UDim2.new(0, 0, 0.21, 0)
+LogScroll.Size = UDim2.new(1, 0, 0, 195)
+LogScroll.Position = UDim2.new(0, 0, 0.19, 0)
 LogScroll.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
 LogScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 LogScroll.ScrollBarThickness = 4
@@ -217,8 +208,8 @@ local ESPCorner = Instance.new("UICorner", ESPToggleBtn)
 ESPCorner.CornerRadius = UDim.new(0, 4)
 
 local NPCScroll = Instance.new("ScrollingFrame", Page2)
-NPCScroll.Size = UDim2.new(1, 0, 0, 230)
-NPCScroll.Position = UDim2.new(0, 0, 0.12, 0)
+NPCScroll.Size = UDim2.new(1, 0, 0, 250)
+NPCScroll.Position = UDim2.new(0, 0, 0.11, 0)
 NPCScroll.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
 NPCScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 NPCScroll.ScrollBarThickness = 4
@@ -228,7 +219,7 @@ NPCUIList.SortOrder = Enum.SortOrder.LayoutOrder
 NPCUIList.Padding = UDim.new(0, 4)
 
 ---------------------------------------------------------
--- TAB 3: MODEL & BLOCK TRACKER (CÓ BỘ LỌC NÂNG CAO)
+-- TAB 3: MODEL & BLOCK TRACKER
 ---------------------------------------------------------
 local SearchBox = Instance.new("TextBox", Page3)
 SearchBox.Size = UDim2.new(0.48, 0, 0, 25)
@@ -268,8 +259,8 @@ local FilterCorner = Instance.new("UICorner", TypeFilterBtn)
 FilterCorner.CornerRadius = UDim.new(0, 4)
 
 local ModelScroll = Instance.new("ScrollingFrame", Page3)
-ModelScroll.Size = UDim2.new(1, 0, 0, 230)
-ModelScroll.Position = UDim2.new(0, 0, 0.12, 0)
+ModelScroll.Size = UDim2.new(1, 0, 0, 250)
+ModelScroll.Position = UDim2.new(0, 0, 0.11, 0)
 ModelScroll.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
 ModelScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 ModelScroll.ScrollBarThickness = 4
@@ -277,6 +268,32 @@ ModelScroll.ScrollBarThickness = 4
 local ModelUIList = Instance.new("UIListLayout", ModelScroll)
 ModelUIList.SortOrder = Enum.SortOrder.LayoutOrder
 ModelUIList.Padding = UDim.new(0, 4)
+
+---------------------------------------------------------
+-- TAB 4: PLAYER & ITEM INSPECTOR
+---------------------------------------------------------
+local RefreshPlayerBtn = Instance.new("TextButton", Page4)
+RefreshPlayerBtn.Size = UDim2.new(1, 0, 0, 25)
+RefreshPlayerBtn.Position = UDim2.new(0, 0, 0, 0)
+RefreshPlayerBtn.Text = "Làm Mới Danh Sách Người Chơi & Item"
+RefreshPlayerBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 180)
+RefreshPlayerBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+RefreshPlayerBtn.Font = Enum.Font.SourceSansBold
+RefreshPlayerBtn.TextSize = 10
+
+local RefCorner = Instance.new("UICorner", RefreshPlayerBtn)
+RefCorner.CornerRadius = UDim.new(0, 4)
+
+local PlayerScroll = Instance.new("ScrollingFrame", Page4)
+PlayerScroll.Size = UDim2.new(1, 0, 0, 250)
+PlayerScroll.Position = UDim2.new(0, 0, 0.11, 0)
+PlayerScroll.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+PlayerScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+PlayerScroll.ScrollBarThickness = 4
+
+local PlayerUIList = Instance.new("UIListLayout", PlayerScroll)
+PlayerUIList.SortOrder = Enum.SortOrder.LayoutOrder
+PlayerUIList.Padding = UDim.new(0, 4)
 
 -- NÚT THU NHỎ
 local OpenBtn = Instance.new("TextButton", ScreenGui)
@@ -298,7 +315,7 @@ CloseBtn.MouseButton1Click:Connect(function() MainFrame.Visible = false; OpenBtn
 OpenBtn.MouseButton1Click:Connect(function() MainFrame.Visible = true; OpenBtn.Visible = false end)
 
 ---------------------------------------------------------
--- LOGIC HỆ THỐNG
+-- LOGIC HỆ THỐNG DÙNG CHUNG
 ---------------------------------------------------------
 local function teleportTo(pos)
     local char = LocalPlayer.Character
@@ -550,7 +567,7 @@ local function updateNPCList()
     NPCScroll.CanvasSize = UDim2.new(0, 0, 0, NPCUIList.AbsoluteContentSize.Y)
 end
 
--- LOGIC TAB 3: MODEL & BLOCK VỚI HÀM LỌC TÍNH NĂNG
+-- LOGIC TAB 3: MODEL & BLOCK
 local distances = {100, 150, 300, 500}
 local currentDistIndex = 2
 
@@ -579,7 +596,6 @@ local function getObjectPos(obj)
     return nil
 end
 
--- HÀM KIỂM TRA ĐIỀU KIỆN LỌC
 local function matchesCategoryFilter(obj)
     local cat = filterCategories[filterCategoryIndex]
     if cat == "Tất cả" then
@@ -737,12 +753,149 @@ local function updateModelList()
     ModelScroll.CanvasSize = UDim2.new(0, 0, 0, ModelUIList.AbsoluteContentSize.Y)
 end
 
+---------------------------------------------------------
+-- LOGIC TAB 4: PLAYER & ITEM / DAMAGE / SCRIPT INSPECTOR
+---------------------------------------------------------
+local function inspectToolDetails(tool)
+    if not tool or not tool:IsA("Tool") then return nil end
+
+    local details = {
+        name = tool.Name,
+        damage = "N/A",
+        scripts = {}
+    }
+
+    -- 1. Quét tìm Sát thương trong Attributes
+    for attrName, attrVal in pairs(tool:GetAttributes()) do
+        local low = string.lower(attrName)
+        if string.find(low, "dam") or string.find(low, "dmg") or string.find(low, "atk") or string.find(low, "power") then
+            details.damage = tostring(attrVal)
+            break
+        end
+    end
+
+    -- 2. Quét tìm Sát thương trong Values (IntValue, NumberValue, StringValue)
+    if details.damage == "N/A" then
+        for _, val in ipairs(tool:GetDescendants()) do
+            if val:IsA("ValueBase") then
+                local low = string.lower(val.Name)
+                if string.find(low, "dam") or string.find(low, "dmg") or string.find(low, "atk") or string.find(low, "power") then
+                    details.damage = tostring(val.Value)
+                    break
+                end
+            end
+        end
+    end
+
+    -- 3. Quét danh sách Scripts
+    for _, s in ipairs(tool:GetDescendants()) do
+        if s:IsA("LuaSourceContainer") then
+            local tag = s:IsA("LocalScript") and "[L]" or (s:IsA("ModuleScript") and "[M]" or "[S]")
+            table.insert(details.scripts, tag .. s.Name)
+        end
+    end
+
+    return details
+end
+
+local function updatePlayerList()
+    for _, child in ipairs(PlayerScroll:GetChildren()) do
+        if child:IsA("Frame") then child:Destroy() end
+    end
+
+    for _, plr in ipairs(Players:GetPlayers()) do
+        local char = plr.Character
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+
+        local heldTool = char and char:FindFirstChildOfClass("Tool")
+        local toolInfo = heldTool and inspectToolDetails(heldTool)
+
+        local ItemFrame = Instance.new("Frame", PlayerScroll)
+        ItemFrame.Size = UDim2.new(1, -5, 0, 58)
+        ItemFrame.BackgroundColor3 = (plr == LocalPlayer) and Color3.fromRGB(30, 45, 30) or Color3.fromRGB(25, 25, 25)
+
+        local ItemCorner = Instance.new("UICorner", ItemFrame)
+        ItemCorner.CornerRadius = UDim.new(0, 4)
+
+        local scriptSummary = "None"
+        if toolInfo and #toolInfo.scripts > 0 then
+            scriptSummary = table.concat(toolInfo.scripts, ", ")
+            if #scriptSummary > 32 then scriptSummary = string.sub(scriptSummary, 1, 30) .. ".." end
+        end
+
+        local textDesc = string.format(
+            "Player: %s (@%s)\nItem Cầm: %s | Dame: %s\nScripts: %s",
+            plr.DisplayName, plr.Name,
+            toolInfo and toolInfo.name or "[Trống]",
+            toolInfo and toolInfo.damage or "--",
+            scriptSummary
+        )
+
+        local InfoLabel = Instance.new("TextLabel", ItemFrame)
+        InfoLabel.Size = UDim2.new(0.66, 0, 1, 0)
+        InfoLabel.Position = UDim2.new(0.02, 0, 0, 0)
+        InfoLabel.Text = textDesc
+        InfoLabel.TextColor3 = toolInfo and Color3.fromRGB(255, 220, 100) or Color3.fromRGB(200, 200, 200)
+        InfoLabel.BackgroundTransparency = 1
+        InfoLabel.Font = Enum.Font.SourceSans
+        InfoLabel.TextSize = 10
+        InfoLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+        local TPBtn = Instance.new("TextButton", ItemFrame)
+        TPBtn.Size = UDim2.new(0.14, 0, 0.55, 0)
+        TPBtn.Position = UDim2.new(0.69, 0, 0.22, 0)
+        TPBtn.Text = "TP Tới"
+        TPBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
+        TPBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        TPBtn.Font = Enum.Font.SourceSansBold
+        TPBtn.TextSize = 10
+
+        local TPCorner = Instance.new("UICorner", TPBtn)
+        TPCorner.CornerRadius = UDim.new(0, 4)
+
+        TPBtn.MouseButton1Click:Connect(function()
+            if hrp then teleportTo(hrp.Position + Vector3.new(0, 3, 0)) end
+        end)
+
+        local CopyBtn = Instance.new("TextButton", ItemFrame)
+        CopyBtn.Size = UDim2.new(0.14, 0, 0.55, 0)
+        CopyBtn.Position = UDim2.new(0.84, 0, 0.22, 0)
+        CopyBtn.Text = "Copy"
+        CopyBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        CopyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        CopyBtn.Font = Enum.Font.SourceSansBold
+        CopyBtn.TextSize = 10
+
+        local CopyCorner = Instance.new("UICorner", CopyBtn)
+        CopyCorner.CornerRadius = UDim.new(0, 4)
+
+        CopyBtn.MouseButton1Click:Connect(function()
+            local fullScriptList = toolInfo and table.concat(toolInfo.scripts, ", ") or "None"
+            local fullCopy = string.format("Player: %s (@%s)\nItem: %s\nDamage: %s\nScripts: %s",
+                plr.DisplayName, plr.Name,
+                toolInfo and toolInfo.name or "None",
+                toolInfo and toolInfo.damage or "N/A",
+                fullScriptList
+            )
+            if setclipboard then setclipboard(fullCopy) end
+            CopyBtn.Text = "OK"
+            task.wait(1)
+            CopyBtn.Text = "Copy"
+        end)
+    end
+    PlayerScroll.CanvasSize = UDim2.new(0, 0, 0, PlayerUIList.AbsoluteContentSize.Y)
+end
+
+RefreshPlayerBtn.MouseButton1Click:Connect(updatePlayerList)
+
 -- VÒNG LẶP CẬP NHẬT TỰ ĐỘNG
 task.spawn(function()
     while task.wait(1.5) do
         if MainFrame.Visible then
             if Page2.Visible then updateNPCList() end
             if Page3.Visible then updateModelList() end
+            if Page4.Visible then updatePlayerList() end
         end
     end
 end)
