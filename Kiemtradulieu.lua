@@ -1,4 +1,4 @@
--- Script All-In-One V2: Log Tọa Độ + NPC Tracker + Model/Block Tracker + Soi Inventory Player
+-- Script Ultimate Tracker V3: Log Pos + NPC + Model/Block + Soi Tool & Code Script
 local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
@@ -22,32 +22,28 @@ local playerESPFolders = {}
 local maxScanDistance = 150
 local filterKeyword = ""
 
--- GUI CHÍNH
+-- TẠO MÀN HÌNH CHÍNH
 local ScreenGui = Instance.new("ScreenGui", CoreGui)
 ScreenGui.Name = "UltimateTrackerGUI"
 
 local MainFrame = Instance.new("Frame", ScreenGui)
-MainFrame.Size = UDim2.new(0, 440, 0, 410)
+MainFrame.Size = UDim2.new(0, 450, 0, 420)
 MainFrame.Position = UDim2.new(0.05, 0, 0.15, 0)
 MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 MainFrame.Active = true
 MainFrame.Draggable = true
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 8)
 
-local UICorner = Instance.new("UICorner", MainFrame)
-UICorner.CornerRadius = UDim.new(0, 8)
-
--- Title Bar
+-- Thanh Tiêu Đề
 local Title = Instance.new("TextLabel", MainFrame)
 Title.Size = UDim2.new(1, -40, 0, 35)
-Title.Text = "  ULTIMATE TRACKER & PLAYER INSPECTOR"
+Title.Text = "  ULTIMATE TRACKER V3 - SCRIPT & ITEM INSPECTOR"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 12
+Title.TextSize = 11
 Title.Font = Enum.Font.SourceSansBold
 Title.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 Title.TextXAlignment = Enum.TextXAlignment.Left
-
-local TitleCorner = Instance.new("UICorner", Title)
-TitleCorner.CornerRadius = UDim.new(0, 8)
+Instance.new("UICorner", Title).CornerRadius = UDim.new(0, 8)
 
 local CloseBtn = Instance.new("TextButton", MainFrame)
 CloseBtn.Size = UDim2.new(0, 30, 0, 30)
@@ -57,11 +53,9 @@ CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 CloseBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 CloseBtn.Font = Enum.Font.SourceSansBold
 CloseBtn.TextSize = 14
+Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 6)
 
-local CloseCorner = Instance.new("UICorner", CloseBtn)
-CloseCorner.CornerRadius = UDim.new(0, 6)
-
--- THANH TAB (4 TAB)
+-- THANH TAB
 local TabFrame = Instance.new("Frame", MainFrame)
 TabFrame.Size = UDim2.new(0.92, 0, 0, 30)
 TabFrame.Position = UDim2.new(0.04, 0, 0.10, 0)
@@ -76,20 +70,18 @@ local function createTabBtn(text, pos)
     btn.TextColor3 = Color3.fromRGB(200, 200, 200)
     btn.Font = Enum.Font.SourceSansBold
     btn.TextSize = 9
-    local c = Instance.new("UICorner", btn)
-    c.CornerRadius = UDim.new(0, 5)
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 5)
     return btn
 end
 
 local Tab1Btn = createTabBtn("Log & Pos", UDim2.new(0, 0, 0, 0))
 local Tab2Btn = createTabBtn("NPC Tracker", UDim2.new(0.25, 0, 0, 0))
 local Tab3Btn = createTabBtn("Model/Block", UDim2.new(0.50, 0, 0, 0))
-local Tab4Btn = createTabBtn("Soi Item Player", UDim2.new(0.75, 0, 0, 0))
+local Tab4Btn = createTabBtn("Soi Script Item", UDim2.new(0.75, 0, 0, 0))
 
 Tab1Btn.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
 Tab1Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
 
--- PAGES
 local function createPage()
     local p = Instance.new("Frame", MainFrame)
     p.Size = UDim2.new(0.92, 0, 0.81, 0)
@@ -156,7 +148,7 @@ FindSpawnBtn.TextSize = 10
 Instance.new("UICorner", FindSpawnBtn).CornerRadius = UDim.new(0, 4)
 
 local LogScroll = Instance.new("ScrollingFrame", Page1)
-LogScroll.Size = UDim2.new(1, 0, 0, 220)
+LogScroll.Size = UDim2.new(1, 0, 0, 230)
 LogScroll.Position = UDim2.new(0, 0, 0.17, 0)
 LogScroll.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
 LogScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
@@ -168,7 +160,7 @@ LogUIList.Padding = UDim.new(0, 4)
 
 local LockToggleBtn = Instance.new("TextButton", Page1)
 LockToggleBtn.Size = UDim2.new(1, 0, 0, 26)
-LockToggleBtn.Position = UDim2.new(0, 0, 0.90, 0)
+LockToggleBtn.Position = UDim2.new(0, 0, 0.91, 0)
 LockToggleBtn.Text = "Khóa Vị Trí Vừa Chọn: OFF"
 LockToggleBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
 LockToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -189,7 +181,7 @@ ESPToggleBtn.TextSize = 10
 Instance.new("UICorner", ESPToggleBtn).CornerRadius = UDim.new(0, 4)
 
 local NPCScroll = Instance.new("ScrollingFrame", Page2)
-NPCScroll.Size = UDim2.new(1, 0, 0, 270)
+NPCScroll.Size = UDim2.new(1, 0, 0, 280)
 NPCScroll.Position = UDim2.new(0, 0, 0.1, 0)
 NPCScroll.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
 NPCScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
@@ -223,7 +215,7 @@ DistBtn.TextSize = 10
 Instance.new("UICorner", DistBtn).CornerRadius = UDim.new(0, 4)
 
 local ModelScroll = Instance.new("ScrollingFrame", Page3)
-ModelScroll.Size = UDim2.new(1, 0, 0, 270)
+ModelScroll.Size = UDim2.new(1, 0, 0, 280)
 ModelScroll.Position = UDim2.new(0, 0, 0.1, 0)
 ModelScroll.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
 ModelScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
@@ -234,7 +226,7 @@ ModelUIList.SortOrder = Enum.SortOrder.LayoutOrder
 ModelUIList.Padding = UDim.new(0, 4)
 
 ---------------------------------------------------------
--- TAB 4: SOI INVENTORY PLAYER (TOOL TRACKER)
+-- TAB 4: SOI INVENTORY PLAYER & COPY SCRIPT / TOOL NAME
 ---------------------------------------------------------
 local PlayerScroll = Instance.new("ScrollingFrame", Page4)
 PlayerScroll.Size = UDim2.new(1, 0, 1, 0)
@@ -264,7 +256,7 @@ CloseBtn.MouseButton1Click:Connect(function() MainFrame.Visible = false; OpenBtn
 OpenBtn.MouseButton1Click:Connect(function() MainFrame.Visible = true; OpenBtn.Visible = false end)
 
 ---------------------------------------------------------
--- HÀM BỔ TRỢ HỆ THỐNG
+-- HÀM XỬ LÝ DỮ LIỆU
 ---------------------------------------------------------
 local function teleportTo(pos)
     local char = LocalPlayer.Character
@@ -350,7 +342,7 @@ task.spawn(function()
     end
 end)
 
--- LOGIC TAB 2: NPC TRACKER
+-- LOGIC TAB 2: NPC
 local function isNPC(model)
     return model:IsA("Model") and model:FindFirstChildOfClass("Humanoid") and model:FindFirstChild("HumanoidRootPart") and not Players:GetPlayerFromCharacter(model)
 end
@@ -379,19 +371,6 @@ local function applyNPCESP(model)
     end
     npcESPFolders[model] = folder
 end
-
-local function removeNPCESP(model)
-    if npcESPFolders[model] then npcESPFolders[model]:Destroy(); npcESPFolders[model] = nil end
-end
-
-ESPToggleBtn.MouseButton1Click:Connect(function()
-    _G.NPCESP = not _G.NPCESP
-    ESPToggleBtn.Text = _G.NPCESP and "Bật/Tắt ESP Toàn Bộ NPC: ON" or "Bật/Tắt ESP Toàn Bộ NPC: OFF"
-    ESPToggleBtn.BackgroundColor3 = _G.NPCESP and Color3.fromRGB(50, 180, 50) or Color3.fromRGB(180, 50, 50)
-    for _, obj in pairs(Workspace:GetDescendants()) do
-        if isNPC(obj) then if _G.NPCESP then applyNPCESP(obj) else removeNPCESP(obj) end end
-    end
-end)
 
 local function updateNPCList()
     for _, child in pairs(NPCScroll:GetChildren()) do if child:IsA("Frame") then child:Destroy() end end
@@ -432,7 +411,7 @@ local function updateNPCList()
     NPCScroll.CanvasSize = UDim2.new(0, 0, 0, NPCUIList.AbsoluteContentSize.Y)
 end
 
--- LOGIC TAB 3: MODEL / BLOCK TRACKER
+-- LOGIC TAB 3: MODEL/BLOCK
 local distances = {100, 150, 300, 500}
 local currentDistIndex = 2
 DistBtn.MouseButton1Click:Connect(function()
@@ -529,7 +508,7 @@ local function updateModelList()
 end
 
 ---------------------------------------------------------
--- LOGIC TAB 4: SOI INVENTORY CỦA NGƯỜI CHƠI (TOOLS & SCRIPTS)
+-- LOGIC TAB 4: NÂNG CẤP COPY SCRIPT VÀ TÊN VẬT PHẨM
 ---------------------------------------------------------
 local function togglePlayerESP(plr)
     if playerESPFolders[plr] then
@@ -567,48 +546,155 @@ local function togglePlayerESP(plr)
     return false
 end
 
-local function scanScriptsInTool(tool)
-    local scriptList = {}
-    for _, desc in pairs(tool:GetDescendants()) do
-        if desc:IsA("Script") or desc:IsA("LocalScript") or desc:IsA("ModuleScript") then
-            table.insert(scriptList, string.format("   📜 %s (%s)", desc.Name, desc.ClassName))
-        end
+-- Hàm Decompile / Lấy Mã Nguồn Script
+local function getScriptSource(scr)
+    if decompile then
+        local success, code = pcall(function() return decompile(scr) end)
+        if success and code and #code > 0 then return code end
     end
-    if #scriptList == 0 then
-        return "   (Không có Script)"
+    if scr:IsA("LocalScript") and scr.Source and #scr.Source > 0 then
+        return scr.Source
     end
-    return table.concat(scriptList, "\n")
+    return "-- [Không thể giải mã source của Script này hoặc Executor không hỗ trợ decompile]"
 end
 
-local function getPlayerInventoryDetails(plr)
-    local toolsInfo = {}
+local function buildToolItemsList(plr, parentContainer)
+    local toolsList = {}
     
-    -- Quét trong Backpack
+    local function processTool(tool, locationTag)
+        table.insert(toolsList, tool)
+    end
+
     local backpack = plr:FindFirstChildOfClass("Backpack")
     if backpack then
         for _, item in pairs(backpack:GetChildren()) do
-            if item:IsA("Tool") then
-                local scriptTree = scanScriptsInTool(item)
-                table.insert(toolsInfo, string.format("🗡️ [Túi] %s\n%s", item.Name, scriptTree))
-            end
+            if item:IsA("Tool") then processTool(item, "[Túi]") end
         end
     end
 
-    -- Quét món đồ đang cầm trên tay (Character)
     local char = plr.Character
     if char then
         for _, item in pairs(char:GetChildren()) do
-            if item:IsA("Tool") then
-                local scriptTree = scanScriptsInTool(item)
-                table.insert(toolsInfo, string.format("✋ [Đang Cầm] %s\n%s", item.Name, scriptTree))
-            end
+            if item:IsA("Tool") then processTool(item, "[Tay]") end
         end
     end
 
-    if #toolsInfo == 0 then
-        return "Trống (Không có Vật Phẩm/Tool)"
+    if #toolsList == 0 then
+        local EmptyText = Instance.new("TextLabel", parentContainer)
+        EmptyText.Size = UDim2.new(1, 0, 0, 25)
+        EmptyText.Text = "Không có vật phẩm/Tool trong người."
+        EmptyText.TextColor3 = Color3.fromRGB(120, 120, 120)
+        EmptyText.BackgroundTransparency = 1
+        EmptyText.Font = Enum.Font.SourceSansItalic
+        EmptyText.TextSize = 10
+        return
     end
-    return table.concat(toolsInfo, "\n")
+
+    for _, tool in pairs(toolsList) do
+        local isEquipped = tool.Parent == plr.Character
+        local locationTag = isEquipped and "[Đang cầm]" or "[Túi đồ]"
+        
+        local ToolBox = Instance.new("Frame", parentContainer)
+        ToolBox.Size = UDim2.new(1, -5, 0, 65)
+        ToolBox.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+        Instance.new("UICorner", ToolBox).CornerRadius = UDim.new(0, 4)
+
+        -- Tên Tool
+        local ToolNameLabel = Instance.new("TextLabel", ToolBox)
+        ToolNameLabel.Size = UDim2.new(0.55, 0, 0, 20)
+        ToolNameLabel.Position = UDim2.new(0.02, 0, 0.05, 0)
+        ToolNameLabel.Text = string.format("🗡️ %s %s", locationTag, tool.Name)
+        ToolNameLabel.TextColor3 = isEquipped and Color3.fromRGB(255, 170, 0) or Color3.fromRGB(100, 200, 255)
+        ToolNameLabel.BackgroundTransparency = 1
+        ToolNameLabel.Font = Enum.Font.SourceSansBold
+        ToolNameLabel.TextSize = 10
+        ToolNameLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+        -- Nút Copy Tên Vật Phẩm
+        local CopyNameBtn = Instance.new("TextButton", ToolBox)
+        CopyNameBtn.Size = UDim2.new(0.38, 0, 0, 18)
+        CopyNameBtn.Position = UDim2.new(0.60, 0, 0.05, 0)
+        CopyNameBtn.Text = "📋 Copy Tên Item"
+        CopyNameBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        CopyNameBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        CopyNameBtn.Font = Enum.Font.SourceSansBold
+        CopyNameBtn.TextSize = 9
+        Instance.new("UICorner", CopyNameBtn).CornerRadius = UDim.new(0, 3)
+
+        CopyNameBtn.MouseButton1Click:Connect(function()
+            setclipboard(tool.Name)
+            CopyNameBtn.Text = "✓ Đã Copy Tên"
+            task.wait(1)
+            CopyNameBtn.Text = "📋 Copy Tên Item"
+        end)
+
+        -- Cây Script Inside
+        local scriptsInside = {}
+        for _, desc in pairs(tool:GetDescendants()) do
+            if desc:IsA("Script") or desc:IsA("LocalScript") or desc:IsA("ModuleScript") then
+                table.insert(scriptsInside, desc)
+            end
+        end
+
+        local ScriptScroll = Instance.new("ScrollingFrame", ToolBox)
+        ScriptScroll.Size = UDim2.new(0.96, 0, 0, 36)
+        ScriptScroll.Position = UDim2.new(0.02, 0, 0.38, 0)
+        ScriptScroll.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+        ScriptScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+        ScriptScroll.ScrollBarThickness = 2
+
+        local ScriptListUI = Instance.new("UIListLayout", ScriptScroll)
+        ScriptListUI.SortOrder = Enum.SortOrder.LayoutOrder
+        ScriptListUI.Padding = UDim.new(0, 2)
+
+        if #scriptsInside == 0 then
+            local NoScrLabel = Instance.new("TextLabel", ScriptScroll)
+            NoScrLabel.Size = UDim2.new(1, 0, 1, 0)
+            NoScrLabel.Text = "   (Không có script nào bên trong)"
+            NoScrLabel.TextColor3 = Color3.fromRGB(100, 100, 100)
+            NoScrLabel.BackgroundTransparency = 1
+            NoScrLabel.Font = Enum.Font.SourceSansItalic
+            NoScrLabel.TextSize = 9
+            NoScrLabel.TextXAlignment = Enum.TextXAlignment.Left
+        else
+            for _, scr in pairs(scriptsInside) do
+                local ScrFrame = Instance.new("Frame", ScriptScroll)
+                ScrFrame.Size = UDim2.new(1, -4, 0, 18)
+                ScrFrame.BackgroundTransparency = 1
+
+                local ScrLabel = Instance.new("TextLabel", ScrFrame)
+                ScrLabel.Size = UDim2.new(0.6, 0, 1, 0)
+                ScrLabel.Position = UDim2.new(0.02, 0, 0, 0)
+                ScrLabel.Text = string.format("📜 %s (%s)", scr.Name, scr.ClassName)
+                ScrLabel.TextColor3 = Color3.fromRGB(200, 220, 255)
+                ScrLabel.BackgroundTransparency = 1
+                ScrLabel.Font = Enum.Font.SourceSans
+                ScrLabel.TextSize = 9
+                ScrLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+                -- Nút Copy Code Script
+                local CopyCodeBtn = Instance.new("TextButton", ScrFrame)
+                CopyCodeBtn.Size = UDim2.new(0.35, 0, 0.9, 0)
+                CopyCodeBtn.Position = UDim2.new(0.63, 0, 0.05, 0)
+                CopyCodeBtn.Text = "Copy Code"
+                CopyCodeBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 180)
+                CopyCodeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+                CopyCodeBtn.Font = Enum.Font.SourceSansBold
+                CopyCodeBtn.TextSize = 8
+                Instance.new("UICorner", CopyCodeBtn).CornerRadius = UDim.new(0, 3)
+
+                CopyCodeBtn.MouseButton1Click:Connect(function()
+                    local code = getScriptSource(scr)
+                    setclipboard(code)
+                    CopyCodeBtn.Text = "✓ Copied Code"
+                    task.wait(1)
+                    CopyCodeBtn.Text = "Copy Code"
+                end)
+            end
+        end
+
+        ScriptScroll.CanvasSize = UDim2.new(0, 0, 0, ScriptListUI.AbsoluteContentSize.Y)
+    end
 end
 
 local function updatePlayerInspector()
@@ -620,58 +706,27 @@ local function updatePlayerInspector()
         if char and hum and hum.Health > 0 then
             local pos = char:GetPivot().Position
             local healthStr = string.format("HP: %d/%d", math.floor(hum.Health), math.floor(hum.MaxHealth))
-            local posStr = string.format("Pos: (%.1f, %.1f, %.1f)", pos.X, pos.Y, pos.Z)
-            local itemDetails = getPlayerInventoryDetails(plr)
 
             local CardFrame = Instance.new("Frame", PlayerScroll)
-            CardFrame.Size = UDim2.new(1, -5, 0, 110)
+            CardFrame.Size = UDim2.new(1, -5, 0, 150)
             CardFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-            Instance.new("UICorner", CardFrame).CornerRadius = UDim.new(0, 4)
+            Instance.new("UICorner", CardFrame).CornerRadius = UDim.new(0, 5)
 
-            -- Tiêu đề Player
+            -- Player Header
             local HeaderLabel = Instance.new("TextLabel", CardFrame)
-            HeaderLabel.Size = UDim2.new(0.6, 0, 0, 22)
+            HeaderLabel.Size = UDim2.new(0.58, 0, 0, 22)
             HeaderLabel.Position = UDim2.new(0.02, 0, 0.02, 0)
-            HeaderLabel.Text = string.format("👤 %s (@%s) | %s", plr.DisplayName, plr.Name, healthStr)
+            HeaderLabel.Text = string.format("👤 %s | %s", plr.DisplayName, healthStr)
             HeaderLabel.TextColor3 = (plr == LocalPlayer) and Color3.fromRGB(0, 255, 150) or Color3.fromRGB(255, 200, 50)
             HeaderLabel.BackgroundTransparency = 1
             HeaderLabel.Font = Enum.Font.SourceSansBold
             HeaderLabel.TextSize = 11
             HeaderLabel.TextXAlignment = Enum.TextXAlignment.Left
 
-            local PosLabel = Instance.new("TextLabel", CardFrame)
-            PosLabel.Size = UDim2.new(0.6, 0, 0, 15)
-            PosLabel.Position = UDim2.new(0.02, 0, 0.22, 0)
-            PosLabel.Text = posStr
-            PosLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
-            PosLabel.BackgroundTransparency = 1
-            PosLabel.Font = Enum.Font.Code
-            PosLabel.TextSize = 9
-            PosLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-            -- Khung Scroll Danh Sách Vật Phẩm & Script Inside
-            local ItemScroll = Instance.new("ScrollingFrame", CardFrame)
-            ItemScroll.Size = UDim2.new(0.96, 0, 0, 60)
-            ItemScroll.Position = UDim2.new(0.02, 0, 0.38, 0)
-            ItemScroll.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-            ItemScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-            ItemScroll.ScrollBarThickness = 3
-
-            local ItemText = Instance.new("TextLabel", ItemScroll)
-            ItemText.Size = UDim2.new(1, -5, 1, 0)
-            ItemText.Position = UDim2.new(0, 2, 0, 2)
-            ItemText.Text = itemDetails
-            ItemText.TextColor3 = Color3.fromRGB(200, 220, 255)
-            ItemText.BackgroundTransparency = 1
-            ItemText.Font = Enum.Font.SourceSans
-            ItemText.TextSize = 10
-            ItemText.TextXAlignment = Enum.TextXAlignment.Left
-            ItemText.TextYAlignment = Enum.TextYAlignment.Top
-
-            -- Nút Chức Năng (ESP & Teleport)
+            -- Nút ESP Player
             local PESPBtn = Instance.new("TextButton", CardFrame)
-            PESPBtn.Size = UDim2.new(0.16, 0, 0.22, 0)
-            PESPBtn.Position = UDim2.new(0.65, 0, 0.05, 0)
+            PESPBtn.Size = UDim2.new(0.18, 0, 0.14, 0)
+            PESPBtn.Position = UDim2.new(0.61, 0, 0.03, 0)
             PESPBtn.Text = playerESPFolders[plr] and "ESP: ON" or "ESP: OFF"
             PESPBtn.BackgroundColor3 = playerESPFolders[plr] and Color3.fromRGB(50, 180, 50) or Color3.fromRGB(70, 70, 70)
             PESPBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -685,9 +740,10 @@ local function updatePlayerInspector()
                 PESPBtn.BackgroundColor3 = status and Color3.fromRGB(50, 180, 50) or Color3.fromRGB(70, 70, 70)
             end)
 
+            -- Nút Teleport Tới Player
             local PTPBtn = Instance.new("TextButton", CardFrame)
-            PTPBtn.Size = UDim2.new(0.15, 0, 0.22, 0)
-            PTPBtn.Position = UDim2.new(0.82, 0, 0.05, 0)
+            PTPBtn.Size = UDim2.new(0.17, 0, 0.14, 0)
+            PTPBtn.Position = UDim2.new(0.80, 0, 0.03, 0)
             PTPBtn.Text = "TP Tới"
             PTPBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 215)
             PTPBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -698,12 +754,27 @@ local function updatePlayerInspector()
             PTPBtn.MouseButton1Click:Connect(function()
                 teleportTo(pos + Vector3.new(0, 3, 0))
             end)
+
+            -- Khung Chứa Danh Sách Vật Phẩm
+            local ItemsContainer = Instance.new("ScrollingFrame", CardFrame)
+            ItemsContainer.Size = UDim2.new(0.96, 0, 0, 118)
+            ItemsContainer.Position = UDim2.new(0.02, 0, 0.18, 0)
+            ItemsContainer.BackgroundColor3 = Color3.fromRGB(14, 14, 14)
+            ItemsContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
+            ItemsContainer.ScrollBarThickness = 3
+
+            local ItemsUIList = Instance.new("UIListLayout", ItemsContainer)
+            ItemsUIList.SortOrder = Enum.SortOrder.LayoutOrder
+            ItemsUIList.Padding = UDim.new(0, 4)
+
+            buildToolItemsList(plr, ItemsContainer)
+            ItemsContainer.CanvasSize = UDim2.new(0, 0, 0, ItemsUIList.AbsoluteContentSize.Y)
         end
     end
     PlayerScroll.CanvasSize = UDim2.new(0, 0, 0, PlayerUIList.AbsoluteContentSize.Y)
 end
 
--- VÒNG LẶP CẬP NHẬT TỰ ĐỘNG
+-- VÒNG LẶP CẬP NHẬT AUTOMATIC
 task.spawn(function()
     while task.wait(1.5) do
         if MainFrame.Visible then
