@@ -1,6 +1,6 @@
 --=========================================================
--- ULTIMATE 9-TAB CUSTOM TOOLKIT v10.0 (OVERHAUL EDITION)
--- Toggle UI: Phím Right Control
+-- ULTIMATE 9-TAB CUSTOM TOOLKIT v11.0 (MINIMIZE & OVERHAUL)
+-- Toggle Hotkey: Right Control
 --=========================================================
 
 local Players = game:GetService("Players")
@@ -24,7 +24,7 @@ local function getScriptCode(scr)
 end
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "CustomInspectorUI_v10_0"
+ScreenGui.Name = "CustomInspectorUI_v11_0"
 ScreenGui.ResetOnSpawn = false
 
 if gethui then
@@ -36,6 +36,7 @@ else
     ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 end
 
+-- MAIN FRAME
 local MainFrame = Instance.new("Frame", ScreenGui)
 MainFrame.Size = UDim2.new(0, 680, 0, 460)
 MainFrame.Position = UDim2.new(0.5, -340, 0.5, -230)
@@ -48,35 +49,98 @@ local MainStroke = Instance.new("UIStroke", MainFrame)
 MainStroke.Color = Color3.fromRGB(0, 255, 170)
 MainStroke.Thickness = 1.2
 
--- Header
+-- MINI BAR (MINIMIZED FRAME)
+local MiniFrame = Instance.new("Frame", ScreenGui)
+MiniFrame.Size = UDim2.new(0, 220, 0, 32)
+MiniFrame.Position = UDim2.new(0.5, -110, 0.05, 0)
+MiniFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+MiniFrame.Active = true
+MiniFrame.Draggable = true
+MiniFrame.Visible = false
+Instance.new("UICorner", MiniFrame).CornerRadius = UDim.new(0, 6)
+
+local MiniStroke = Instance.new("UIStroke", MiniFrame)
+MiniStroke.Color = Color3.fromRGB(0, 255, 170)
+MiniStroke.Thickness = 1.2
+
+local MiniTitle = Instance.new("TextLabel", MiniFrame)
+MiniTitle.Size = UDim2.new(1, -40, 1, 0)
+MiniTitle.Position = UDim2.new(0, 8, 0, 0)
+MiniTitle.Text = "🚀 TOOLKIT v11.0"
+MiniTitle.TextColor3 = Color3.fromRGB(0, 255, 170)
+MiniTitle.BackgroundTransparency = 1
+MiniTitle.Font = Enum.Font.SourceSansBold
+MiniTitle.TextSize = 12
+MiniTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+local ExpandBtn = Instance.new("TextButton", MiniFrame)
+ExpandBtn.Size = UDim2.new(0, 24, 0, 22)
+ExpandBtn.Position = UDim2.new(1, -28, 0, 5)
+ExpandBtn.Text = "🗖"
+ExpandBtn.TextColor3 = Color3.fromRGB(0, 255, 170)
+ExpandBtn.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
+ExpandBtn.Font = Enum.Font.SourceSansBold
+ExpandBtn.TextSize = 12
+Instance.new("UICorner", ExpandBtn).CornerRadius = UDim.new(0, 4)
+
+-- HEADER CONTROL BUTTONS
 local TitleLabel = Instance.new("TextLabel", MainFrame)
-TitleLabel.Size = UDim2.new(1, -70, 0, 32)
+TitleLabel.Size = UDim2.new(1, -100, 0, 32)
 TitleLabel.Position = UDim2.new(0, 12, 0, 0)
-TitleLabel.Text = "🚀 ULTIMATE TOOLKIT v10.0 (OVERHAUL)"
+TitleLabel.Text = "🚀 ULTIMATE TOOLKIT v11.0 (MINIMIZE & OVERHAUL)"
 TitleLabel.TextColor3 = Color3.fromRGB(0, 255, 170)
 TitleLabel.BackgroundTransparency = 1
 TitleLabel.Font = Enum.Font.SourceSansBold
-TitleLabel.TextSize = 14
+TitleLabel.TextSize = 13
 TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 
+local MinimizeBtn = Instance.new("TextButton", MainFrame)
+MinimizeBtn.Size = UDim2.new(0, 26, 0, 22)
+MinimizeBtn.Position = UDim2.new(1, -60, 0, 5)
+MinimizeBtn.Text = "—"
+MinimizeBtn.TextColor3 = Color3.fromRGB(255, 200, 50)
+MinimizeBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 38)
+MinimizeBtn.Font = Enum.Font.SourceSansBold
+MinimizeBtn.TextSize = 12
+Instance.new("UICorner", MinimizeBtn).CornerRadius = UDim.new(0, 4)
+
 local CloseBtn = Instance.new("TextButton", MainFrame)
-CloseBtn.Size = UDim2.new(0, 26, 0, 24)
-CloseBtn.Position = UDim2.new(1, -32, 0, 4)
+CloseBtn.Size = UDim2.new(0, 26, 0, 22)
+CloseBtn.Position = UDim2.new(1, -30, 0, 5)
 CloseBtn.Text = "✕"
 CloseBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
-CloseBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 38)
 CloseBtn.Font = Enum.Font.SourceSansBold
 CloseBtn.TextSize = 12
 Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 4)
 
-CloseBtn.MouseButton1Click:Connect(function() MainFrame.Visible = false end)
+MinimizeBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    MiniFrame.Visible = true
+end)
+
+ExpandBtn.MouseButton1Click:Connect(function()
+    MiniFrame.Visible = false
+    MainFrame.Visible = true
+end)
+
+CloseBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    MiniFrame.Visible = false
+end)
+
 UserInputService.InputBegan:Connect(function(input, gpe)
     if not gpe and input.KeyCode == Enum.KeyCode.RightControl then
-        MainFrame.Visible = not MainFrame.Visible
+        if MiniFrame.Visible then
+            MiniFrame.Visible = false
+            MainFrame.Visible = true
+        else
+            MainFrame.Visible = not MainFrame.Visible
+        end
     end
 end)
 
--- Navigation Bar
+-- NAVIGATION BAR & TAB SYSTEM
 local TabBar = Instance.new("Frame", MainFrame)
 TabBar.Size = UDim2.new(1, -16, 0, 30)
 TabBar.Position = UDim2.new(0, 8, 0, 34)
@@ -135,13 +199,13 @@ local Page8 = createTab("8. GUI Master", 8)
 local Page9 = createTab("9. Hitbox", 9)
 
 --=========================================================
--- TAB 1: TỌA ĐỘ + TWEEN SPEED CUSTOM
+-- TAB 1: TỌA ĐỘ & WAYPOINTS (CUSTOM TWEEN)
 --=========================================================
 local PosLabel = Instance.new("TextLabel", Page1)
 PosLabel.Size = UDim2.new(1, 0, 0, 28); PosLabel.Text = "X: 0 | Y: 0 | Z: 0 | Yaw: 0°"; PosLabel.TextColor3 = Color3.fromRGB(0, 255, 200); PosLabel.BackgroundColor3 = Color3.fromRGB(18, 18, 22); PosLabel.Font = Enum.Font.SourceSansBold; PosLabel.TextSize = 11; Instance.new("UICorner", PosLabel).CornerRadius = UDim.new(0, 4)
 
 local SpeedInput = Instance.new("TextBox", Page1)
-SpeedInput.Size = UDim2.new(0.2, 0, 0, 22); SpeedInput.Position = UDim2.new(0, 0, 0, 32); SpeedInput.PlaceholderText = "Tween Speed..."; SpeedInput.Text = "60"; SpeedInput.BackgroundColor3 = Color3.fromRGB(25, 25, 30); SpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255); SpeedInput.Font = Enum.Font.SourceSans; SpeedInput.TextSize = 9; Instance.new("UICorner", SpeedInput).CornerRadius = UDim.new(0, 4)
+SpeedInput.Size = UDim2.new(0.2, 0, 0, 22); SpeedInput.Position = UDim2.new(0, 0, 0, 32); SpeedInput.PlaceholderText = "Tốc độ Tween..."; SpeedInput.Text = "60"; SpeedInput.BackgroundColor3 = Color3.fromRGB(25, 25, 30); SpeedInput.TextColor3 = Color3.fromRGB(255, 255, 255); SpeedInput.Font = Enum.Font.SourceSans; SpeedInput.TextSize = 9; Instance.new("UICorner", SpeedInput).CornerRadius = UDim.new(0, 4)
 
 local CopyVecBtn = Instance.new("TextButton", Page1); CopyVecBtn.Size = UDim2.new(0.18, 0, 0, 22); CopyVecBtn.Position = UDim2.new(0.22, 0, 0, 32); CopyVecBtn.Text = "📋 Vec3"; CopyVecBtn.BackgroundColor3 = Color3.fromRGB(0, 110, 170); CopyVecBtn.TextColor3 = Color3.fromRGB(255, 255, 255); CopyVecBtn.Font = Enum.Font.SourceSansBold; CopyVecBtn.TextSize = 8; Instance.new("UICorner", CopyVecBtn).CornerRadius = UDim.new(0, 4)
 local CopyCFBtn = Instance.new("TextButton", Page1); CopyCFBtn.Size = UDim2.new(0.18, 0, 0, 22); CopyCFBtn.Position = UDim2.new(0.41, 0, 0, 32); CopyCFBtn.Text = "📋 CFrame"; CopyCFBtn.BackgroundColor3 = Color3.fromRGB(90, 50, 160); CopyCFBtn.TextColor3 = Color3.fromRGB(255, 255, 255); CopyCFBtn.Font = Enum.Font.SourceSansBold; CopyCFBtn.TextSize = 8; Instance.new("UICorner", CopyCFBtn).CornerRadius = UDim.new(0, 4)
@@ -198,10 +262,10 @@ task.spawn(function()
 end)
 
 --=========================================================
--- TAB 2: NPC RADAR (ADVANCED WITH HEALTH & DISTANCE FILTER)
+-- TAB 2: NPC RADAR & ESP (HEALTH MONITOR)
 --=========================================================
 local NpcSearchBox = Instance.new("TextBox", Page2); NpcSearchBox.Size = UDim2.new(0.48, 0, 0, 24); NpcSearchBox.PlaceholderText = "🔍 Tên NPC..."; NpcSearchBox.Text = ""; NpcSearchBox.BackgroundColor3 = Color3.fromRGB(24, 24, 28); NpcSearchBox.TextColor3 = Color3.fromRGB(255, 255, 255); NpcSearchBox.Font = Enum.Font.SourceSans; NpcSearchBox.TextSize = 10; Instance.new("UICorner", NpcSearchBox).CornerRadius = UDim.new(0, 4)
-local MaxDistBox = Instance.new("TextBox", Page2); MaxDistBox.Size = UDim2.new(0.2, 0, 0, 24); MaxDistBox.Position = UDim2.new(0.50, 0, 0, 0); MaxDistBox.PlaceholderText = "Max Dist (m)..."; MaxDistBox.Text = ""; MaxDistBox.BackgroundColor3 = Color3.fromRGB(24, 24, 28); MaxDistBox.TextColor3 = Color3.fromRGB(255, 255, 255); MaxDistBox.Font = Enum.Font.SourceSans; MaxDistBox.TextSize = 9; Instance.new("UICorner", MaxDistBox).CornerRadius = UDim.new(0, 4)
+local MaxDistBox = Instance.new("TextBox", Page2); MaxDistBox.Size = UDim2.new(0.2, 0, 0, 24); MaxDistBox.Position = UDim2.new(0.50, 0, 0, 0); MaxDistBox.PlaceholderText = "Max Dist..."; MaxDistBox.Text = ""; MaxDistBox.BackgroundColor3 = Color3.fromRGB(24, 24, 28); MaxDistBox.TextColor3 = Color3.fromRGB(255, 255, 255); MaxDistBox.Font = Enum.Font.SourceSans; MaxDistBox.TextSize = 9; Instance.new("UICorner", MaxDistBox).CornerRadius = UDim.new(0, 4)
 local EspToggleBtn = Instance.new("TextButton", Page2); EspToggleBtn.Size = UDim2.new(0.28, 0, 0, 24); EspToggleBtn.Position = UDim2.new(0.72, 0, 0, 0); EspToggleBtn.Text = "👁️ ESP: OFF"; EspToggleBtn.BackgroundColor3 = Color3.fromRGB(140, 35, 35); EspToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255); EspToggleBtn.Font = Enum.Font.SourceSansBold; EspToggleBtn.TextSize = 9; Instance.new("UICorner", EspToggleBtn).CornerRadius = UDim.new(0, 4)
 
 local NpcScroll = Instance.new("ScrollingFrame", Page2); NpcScroll.Size = UDim2.new(1, 0, 1, -30); NpcScroll.Position = UDim2.new(0, 0, 0, 30); NpcScroll.BackgroundTransparency = 1; NpcScroll.CanvasSize = UDim2.new(0, 0, 0, 0); NpcScroll.ScrollBarThickness = 3
@@ -245,7 +309,7 @@ local function updateNpcList()
 end
 
 --=========================================================
--- TAB 3: BLOCKS & PROXIMITY PROMPT
+-- TAB 3: PROXIMITY PROMPT & BLOCKS
 --=========================================================
 local InstantHoldBtn = Instance.new("TextButton", Page3); InstantHoldBtn.Size = UDim2.new(0.32, 0, 0, 24); InstantHoldBtn.Text = "⚡ Hold Time = 0"; InstantHoldBtn.BackgroundColor3 = Color3.fromRGB(140, 90, 0); InstantHoldBtn.TextColor3 = Color3.fromRGB(255, 255, 255); InstantHoldBtn.Font = Enum.Font.SourceSansBold; InstantHoldBtn.TextSize = 9; Instance.new("UICorner", InstantHoldBtn).CornerRadius = UDim.new(0, 4)
 local FirePromptsBtn = Instance.new("TextButton", Page3); FirePromptsBtn.Size = UDim2.new(0.32, 0, 0, 24); FirePromptsBtn.Position = UDim2.new(0.34, 0, 0, 0); FirePromptsBtn.Text = "🔥 Fire All Prompts"; FirePromptsBtn.BackgroundColor3 = Color3.fromRGB(160, 40, 40); FirePromptsBtn.TextColor3 = Color3.fromRGB(255, 255, 255); FirePromptsBtn.Font = Enum.Font.SourceSansBold; FirePromptsBtn.TextSize = 9; Instance.new("UICorner", FirePromptsBtn).CornerRadius = UDim.new(0, 4)
@@ -290,7 +354,7 @@ local function updateBlockScanner()
 end
 
 --=========================================================
--- TAB 4: BACKPACK INSPECTOR (WITH EQUIP ALL / DROP ACTIONS)
+-- TAB 4: BACKPACK INSPECTOR
 --=========================================================
 local EquipAllBtn = Instance.new("TextButton", Page4); EquipAllBtn.Size = UDim2.new(0.48, 0, 0, 22); EquipAllBtn.Text = "⚔️ Equip All Tools"; EquipAllBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 180); EquipAllBtn.TextColor3 = Color3.fromRGB(255, 255, 255); EquipAllBtn.Font = Enum.Font.SourceSansBold; EquipAllBtn.TextSize = 9; Instance.new("UICorner", EquipAllBtn).CornerRadius = UDim.new(0, 4)
 local DropAllBtn = Instance.new("TextButton", Page4); DropAllBtn.Size = UDim2.new(0.48, 0, 0, 22); DropAllBtn.Position = UDim2.new(0.51, 0, 0, 0); DropAllBtn.Text = "🗑️ Drop Holding Tool"; DropAllBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50); DropAllBtn.TextColor3 = Color3.fromRGB(255, 255, 255); DropAllBtn.Font = Enum.Font.SourceSansBold; DropAllBtn.TextSize = 9; Instance.new("UICorner", DropAllBtn).CornerRadius = UDim.new(0, 4)
@@ -361,7 +425,7 @@ local function updateBackpackInspector()
 end
 
 --=========================================================
--- TAB 5: STATS INSPECTOR PRO (WITH SPEEDS & MORE)
+-- TAB 5: STATS INSPECTOR PRO
 --=========================================================
 local StatsScroll = Instance.new("ScrollingFrame", Page5); StatsScroll.Size = UDim2.new(1, 0, 1, 0); StatsScroll.BackgroundTransparency = 1; StatsScroll.CanvasSize = UDim2.new(0, 0, 0, 0); StatsScroll.ScrollBarThickness = 3
 local StatsListUI = Instance.new("UIListLayout", StatsScroll); StatsListUI.Padding = UDim.new(0, 6)
@@ -402,7 +466,7 @@ end
 --=========================================================
 -- TAB 6: REMOTE SPY PRO
 --=========================================================
-local SpyFilterBox = Instance.new("TextBox", Page6); SpyFilterBox.Size = UDim2.new(0.48, 0, 0, 24); SpyFilterBox.PlaceholderText = "🔍 Lọc tên Remote..."; SpyFilterBox.Text = ""; SpyFilterBox.BackgroundColor3 = Color3.fromRGB(24, 24, 28); SpyFilterBox.TextColor3 = Color3.fromRGB(255, 255, 255); SpyFilterBox.Font = Enum.Font.SourceSans; SpyFilterBox.TextSize = 9; Instance.new("UICorner", SpyFilterBox).CornerRadius = UDim.new(0, 4)
+local SpyFilterBox = Instance.new("TextBox", Page6); SpyFilterBox.Size = UDim2.new(0.48, 0, 0, 24); SpyFilterBox.PlaceholderText = "🔍 Lọc Remote..."; SpyFilterBox.Text = ""; SpyFilterBox.BackgroundColor3 = Color3.fromRGB(24, 24, 28); SpyFilterBox.TextColor3 = Color3.fromRGB(255, 255, 255); SpyFilterBox.Font = Enum.Font.SourceSans; SpyFilterBox.TextSize = 9; Instance.new("UICorner", SpyFilterBox).CornerRadius = UDim.new(0, 4)
 local RemoteSpyToggle = Instance.new("TextButton", Page6); RemoteSpyToggle.Size = UDim2.new(0.24, 0, 0, 24); RemoteSpyToggle.Position = UDim2.new(0.5, 0, 0, 0); RemoteSpyToggle.Text = "📡 Spy: OFF"; RemoteSpyToggle.BackgroundColor3 = Color3.fromRGB(140, 35, 35); RemoteSpyToggle.TextColor3 = Color3.fromRGB(255, 255, 255); RemoteSpyToggle.Font = Enum.Font.SourceSansBold; RemoteSpyToggle.TextSize = 9; Instance.new("UICorner", RemoteSpyToggle).CornerRadius = UDim.new(0, 4)
 local ClearSpyBtn = Instance.new("TextButton", Page6); ClearSpyBtn.Size = UDim2.new(0.24, 0, 0, 24); ClearSpyBtn.Position = UDim2.new(0.75, 0, 0, 0); ClearSpyBtn.Text = "🗑️ Clear Log"; ClearSpyBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60); ClearSpyBtn.TextColor3 = Color3.fromRGB(255, 255, 255); ClearSpyBtn.Font = Enum.Font.SourceSansBold; ClearSpyBtn.TextSize = 9; Instance.new("UICorner", ClearSpyBtn).CornerRadius = UDim.new(0, 4)
 local SpyScroll = Instance.new("ScrollingFrame", Page6); SpyScroll.Size = UDim2.new(1, 0, 1, -30); SpyScroll.Position = UDim2.new(0, 0, 0, 30); SpyScroll.BackgroundTransparency = 1; SpyScroll.CanvasSize = UDim2.new(0, 0, 0, 0); SpyScroll.ScrollBarThickness = 3
@@ -464,11 +528,9 @@ if rawMeta and setreadonly then
 end
 
 --=========================================================
--- TAB 7: CONSOLE LOG (WITH SEARCH FILTER)
+-- TAB 7: CONSOLE LOG
 --=========================================================
 local ConsoleSearchBox = Instance.new("TextBox", Page7); ConsoleSearchBox.Size = UDim2.new(0.35, 0, 0, 22); ConsoleSearchBox.PlaceholderText = "🔍 Tìm log..."; ConsoleSearchBox.Text = ""; ConsoleSearchBox.BackgroundColor3 = Color3.fromRGB(24, 24, 28); ConsoleSearchBox.TextColor3 = Color3.fromRGB(255, 255, 255); ConsoleSearchBox.Font = Enum.Font.SourceSans; ConsoleSearchBox.TextSize = 9; Instance.new("UICorner", ConsoleSearchBox).CornerRadius = UDim.new(0, 3)
-local BtnAll = Instance.new("TextButton", Page7); BtnAll.Size = UDim2.new(0.18, 0, 0, 22); BtnAll.Position = UDim2.new(0.36, 0, 0, 0); BtnAll.Text = "All Logs"; BtnAll.BackgroundColor3 = Color3.fromRGB(0, 160, 110); BtnAll.TextColor3 = Color3.fromRGB(255, 255, 255); BtnAll.Font = Enum.Font.SourceSansBold; BtnAll.TextSize = 9; Instance.new("UICorner", BtnAll).CornerRadius = UDim.new(0, 3)
-local BtnErr = Instance.new("TextButton", Page7); BtnErr.Size = UDim2.new(0.22, 0, 0, 22); BtnErr.Position = UDim2.new(0.55, 0, 0, 0); BtnErr.Text = "❌ Errors Only"; BtnErr.BackgroundColor3 = Color3.fromRGB(35, 35, 35); BtnErr.TextColor3 = Color3.fromRGB(255, 80, 80); BtnErr.Font = Enum.Font.SourceSansBold; BtnErr.TextSize = 9; Instance.new("UICorner", BtnErr).CornerRadius = UDim.new(0, 3)
 local ClearConsoleBtn = Instance.new("TextButton", Page7); ClearConsoleBtn.Size = UDim2.new(0.2, 0, 0, 22); ClearConsoleBtn.Position = UDim2.new(0.78, 0, 0, 0); ClearConsoleBtn.Text = "🗑️ Clear"; ClearConsoleBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60); ClearConsoleBtn.TextColor3 = Color3.fromRGB(255, 255, 255); ClearConsoleBtn.Font = Enum.Font.SourceSansBold; ClearConsoleBtn.TextSize = 9; Instance.new("UICorner", ClearConsoleBtn).CornerRadius = UDim.new(0, 3)
 
 local ConsoleScroll = Instance.new("ScrollingFrame", Page7); ConsoleScroll.Size = UDim2.new(1, 0, 1, -28); ConsoleScroll.Position = UDim2.new(0, 0, 0, 28); ConsoleScroll.BackgroundTransparency = 1; ConsoleScroll.CanvasSize = UDim2.new(0, 0, 0, 0); ConsoleScroll.ScrollBarThickness = 3
@@ -491,7 +553,7 @@ ClearConsoleBtn.MouseButton1Click:Connect(function()
 end)
 
 --=========================================================
--- TAB 8: GUI INSPECTOR MASTER (ENABLE/DISABLE ALL)
+-- TAB 8: GUI INSPECTOR MASTER
 --=========================================================
 local GuiTargetBox = Instance.new("TextBox", Page8); GuiTargetBox.Size = UDim2.new(0, 280, 0, 24); GuiTargetBox.PlaceholderText = "🔍 Tên Player (Trống = Bản thân)..."; GuiTargetBox.Text = ""; GuiTargetBox.BackgroundColor3 = Color3.fromRGB(24, 24, 28); GuiTargetBox.TextColor3 = Color3.fromRGB(255, 255, 255); GuiTargetBox.Font = Enum.Font.SourceSans; GuiTargetBox.TextSize = 9; Instance.new("UICorner", GuiTargetBox).CornerRadius = UDim.new(0, 4)
 local ScanGuiBtn = Instance.new("TextButton", Page8); ScanGuiBtn.Size = UDim2.new(0, 110, 0, 24); ScanGuiBtn.Position = UDim2.new(0, 290, 0, 0); ScanGuiBtn.Text = "🔍 Quét GUI"; ScanGuiBtn.BackgroundColor3 = Color3.fromRGB(0, 140, 70); ScanGuiBtn.TextColor3 = Color3.fromRGB(255, 255, 255); ScanGuiBtn.Font = Enum.Font.SourceSansBold; ScanGuiBtn.TextSize = 9; Instance.new("UICorner", ScanGuiBtn).CornerRadius = UDim.new(0, 4)
@@ -549,16 +611,10 @@ ToggleAllGuiBtn.MouseButton1Click:Connect(function()
 end)
 
 --=========================================================
--- TAB 9: HITBOX MASTER (OPTIMIZED PERFORMANCE & PRESETS)
+-- TAB 9: HITBOX MASTER
 --=========================================================
-local HitboxScroll = Instance.new("ScrollingFrame", Page9)
-HitboxScroll.Size = UDim2.new(1, 0, 1, 0)
-HitboxScroll.BackgroundTransparency = 1
-HitboxScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-HitboxScroll.ScrollBarThickness = 3
-
-local HitboxListUI = Instance.new("UIListLayout", HitboxScroll)
-HitboxListUI.Padding = UDim.new(0, 6)
+local HitboxScroll = Instance.new("ScrollingFrame", Page9); HitboxScroll.Size = UDim2.new(1, 0, 1, 0); HitboxScroll.BackgroundTransparency = 1; HitboxScroll.CanvasSize = UDim2.new(0, 0, 0, 0); HitboxScroll.ScrollBarThickness = 3
+local HitboxListUI = Instance.new("UIListLayout", HitboxScroll); HitboxListUI.Padding = UDim.new(0, 6)
 
 local hitboxConfigs = {
     NPC = {Box = false, XRay = false, Size = 10, Expand = false, Color = Color3.fromRGB(255, 50, 50)},
@@ -696,7 +752,7 @@ local function createHitboxCard(title, configKey, hasExpand)
         local SizeInput = Instance.new("TextBox", Card)
         SizeInput.Size = UDim2.new(0.48, 0, 0, 22)
         SizeInput.Position = UDim2.new(0.49, 0, 0, 34)
-        SizeInput.PlaceholderText = "Kích thước (Mặc định: 10)..."
+        SizeInput.PlaceholderText = "Kích thước (Default: 10)..."
         SizeInput.Text = "10"
         SizeInput.BackgroundColor3 = Color3.fromRGB(15, 15, 18)
         SizeInput.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -722,7 +778,7 @@ createHitboxCard("⚡ Touch/Trigger Hitbox", "TouchTriggers", false)
 
 HitboxScroll.CanvasSize = UDim2.new(0, 0, 0, HitboxListUI.AbsoluteContentSize.Y)
 
--- AUTO LOOP REFRESH THÔNG MINH
+-- AUTO REFRESH LOOP
 task.spawn(function()
     while task.wait(2) do
         pcall(function()
