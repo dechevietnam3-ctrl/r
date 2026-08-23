@@ -1,5 +1,5 @@
 --=========================================================
--- ULTIMATE 8-TAB CUSTOM TOOLKIT v8.5 (OPTIMIZED & UPGRADED)
+-- ULTIMATE 9-TAB CUSTOM TOOLKIT v9.0 (WITH HITBOX VISUALIZER)
 -- Toggle UI: Phím Right Control
 --=========================================================
 
@@ -24,7 +24,7 @@ local function getScriptCode(scr)
 end
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "CustomInspectorUI_v8_5"
+ScreenGui.Name = "CustomInspectorUI_v9_0"
 ScreenGui.ResetOnSpawn = false
 
 if gethui then
@@ -37,8 +37,8 @@ else
 end
 
 local MainFrame = Instance.new("Frame", ScreenGui)
-MainFrame.Size = UDim2.new(0, 620, 0, 420)
-MainFrame.Position = UDim2.new(0.5, -310, 0.5, -210)
+MainFrame.Size = UDim2.new(0, 640, 0, 430)
+MainFrame.Position = UDim2.new(0.5, -320, 0.5, -215)
 MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
 MainFrame.Active = true
 MainFrame.Draggable = true
@@ -48,7 +48,7 @@ Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 8)
 local TitleLabel = Instance.new("TextLabel", MainFrame)
 TitleLabel.Size = UDim2.new(1, -60, 0, 30)
 TitleLabel.Position = UDim2.new(0, 10, 0, 0)
-TitleLabel.Text = "⚡ TOOLKIT INSPECTOR v8.5 (OPTIMIZED ED)"
+TitleLabel.Text = "⚡ TOOLKIT INSPECTOR v9.0 (HITBOX EDITION)"
 TitleLabel.TextColor3 = Color3.fromRGB(0, 255, 170)
 TitleLabel.BackgroundTransparency = 1
 TitleLabel.Font = Enum.Font.SourceSansBold
@@ -93,7 +93,7 @@ local tabButtons = {}
 
 local function createTab(name, id)
     local btn = Instance.new("TextButton", TabBar)
-    btn.Size = UDim2.new(0.12, 0, 1, 0)
+    btn.Size = UDim2.new(0.108, 0, 1, 0)
     btn.Text = name
     btn.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
     btn.TextColor3 = Color3.fromRGB(160, 160, 160)
@@ -128,198 +128,72 @@ local Page5 = createTab("5. Stats", 5)
 local Page6 = createTab("6. Remote Spy", 6)
 local Page7 = createTab("7. Console", 7)
 local Page8 = createTab("8. GUI Read", 8)
+local Page9 = createTab("9. Hitbox", 9)
 
 --=========================================================
--- TAB 1: TỌA ĐỘ + TWEEN TP + IMPORT/EXPORT
+-- TAB 1: TỌA ĐỘ + TWEEN TP
 --=========================================================
 local PosLabel = Instance.new("TextLabel", Page1)
-PosLabel.Size = UDim2.new(1, 0, 0, 26)
-PosLabel.Text = "X: 0 | Y: 0 | Z: 0"
-PosLabel.TextColor3 = Color3.fromRGB(0, 255, 200)
-PosLabel.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-PosLabel.Font = Enum.Font.SourceSansBold
-PosLabel.TextSize = 11
-Instance.new("UICorner", PosLabel).CornerRadius = UDim.new(0, 4)
+PosLabel.Size = UDim2.new(1, 0, 0, 26); PosLabel.Text = "X: 0 | Y: 0 | Z: 0"; PosLabel.TextColor3 = Color3.fromRGB(0, 255, 200); PosLabel.BackgroundColor3 = Color3.fromRGB(20, 20, 20); PosLabel.Font = Enum.Font.SourceSansBold; PosLabel.TextSize = 11; Instance.new("UICorner", PosLabel).CornerRadius = UDim.new(0, 4)
 
-local CopyVecBtn = Instance.new("TextButton", Page1)
-CopyVecBtn.Size = UDim2.new(0.24, 0, 0, 22)
-CopyVecBtn.Position = UDim2.new(0, 0, 0, 30)
-CopyVecBtn.Text = "📋 Copy Vec3"
-CopyVecBtn.BackgroundColor3 = Color3.fromRGB(0, 110, 170)
-CopyVecBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-CopyVecBtn.Font = Enum.Font.SourceSansBold
-CopyVecBtn.TextSize = 8
-Instance.new("UICorner", CopyVecBtn).CornerRadius = UDim.new(0, 4)
+local CopyVecBtn = Instance.new("TextButton", Page1); CopyVecBtn.Size = UDim2.new(0.24, 0, 0, 22); CopyVecBtn.Position = UDim2.new(0, 0, 0, 30); CopyVecBtn.Text = "📋 Copy Vec3"; CopyVecBtn.BackgroundColor3 = Color3.fromRGB(0, 110, 170); CopyVecBtn.TextColor3 = Color3.fromRGB(255, 255, 255); CopyVecBtn.Font = Enum.Font.SourceSansBold; CopyVecBtn.TextSize = 8; Instance.new("UICorner", CopyVecBtn).CornerRadius = UDim.new(0, 4)
+local CopyCFBtn = Instance.new("TextButton", Page1); CopyCFBtn.Size = UDim2.new(0.24, 0, 0, 22); CopyCFBtn.Position = UDim2.new(0.25, 0, 0, 30); CopyCFBtn.Text = "📋 Copy CF"; CopyCFBtn.BackgroundColor3 = Color3.fromRGB(90, 50, 160); CopyCFBtn.TextColor3 = Color3.fromRGB(255, 255, 255); CopyCFBtn.Font = Enum.Font.SourceSansBold; CopyCFBtn.TextSize = 8; Instance.new("UICorner", CopyCFBtn).CornerRadius = UDim.new(0, 4)
+local ExportWpBtn = Instance.new("TextButton", Page1); ExportWpBtn.Size = UDim2.new(0.24, 0, 0, 22); ExportWpBtn.Position = UDim2.new(0.50, 0, 0, 30); ExportWpBtn.Text = "📤 Export JSON"; ExportWpBtn.BackgroundColor3 = Color3.fromRGB(150, 100, 0); ExportWpBtn.TextColor3 = Color3.fromRGB(255, 255, 255); ExportWpBtn.Font = Enum.Font.SourceSansBold; ExportWpBtn.TextSize = 8; Instance.new("UICorner", ExportWpBtn).CornerRadius = UDim.new(0, 4)
+local ImportWpBtn = Instance.new("TextButton", Page1); ImportWpBtn.Size = UDim2.new(0.24, 0, 0, 22); ImportWpBtn.Position = UDim2.new(0.75, 0, 0, 30); ImportWpBtn.Text = "📥 Import JSON"; ImportWpBtn.BackgroundColor3 = Color3.fromRGB(40, 120, 80); ImportWpBtn.TextColor3 = Color3.fromRGB(255, 255, 255); ImportWpBtn.Font = Enum.Font.SourceSansBold; ImportWpBtn.TextSize = 8; Instance.new("UICorner", ImportWpBtn).CornerRadius = UDim.new(0, 4)
 
-local CopyCFBtn = Instance.new("TextButton", Page1)
-CopyCFBtn.Size = UDim2.new(0.24, 0, 0, 22)
-CopyCFBtn.Position = UDim2.new(0.25, 0, 0, 30)
-CopyCFBtn.Text = "📋 Copy CF"
-CopyCFBtn.BackgroundColor3 = Color3.fromRGB(90, 50, 160)
-CopyCFBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-CopyCFBtn.Font = Enum.Font.SourceSansBold
-CopyCFBtn.TextSize = 8
-Instance.new("UICorner", CopyCFBtn).CornerRadius = UDim.new(0, 4)
-
-local ExportWpBtn = Instance.new("TextButton", Page1)
-ExportWpBtn.Size = UDim2.new(0.24, 0, 0, 22)
-ExportWpBtn.Position = UDim2.new(0.50, 0, 0, 30)
-ExportWpBtn.Text = "📤 Export JSON"
-ExportWpBtn.BackgroundColor3 = Color3.fromRGB(150, 100, 0)
-ExportWpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-ExportWpBtn.Font = Enum.Font.SourceSansBold
-ExportWpBtn.TextSize = 8
-Instance.new("UICorner", ExportWpBtn).CornerRadius = UDim.new(0, 4)
-
-local ImportWpBtn = Instance.new("TextButton", Page1)
-ImportWpBtn.Size = UDim2.new(0.24, 0, 0, 22)
-ImportWpBtn.Position = UDim2.new(0.75, 0, 0, 30)
-ImportWpBtn.Text = "📥 Import JSON"
-ImportWpBtn.BackgroundColor3 = Color3.fromRGB(40, 120, 80)
-ImportWpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-ImportWpBtn.Font = Enum.Font.SourceSansBold
-ImportWpBtn.TextSize = 8
-Instance.new("UICorner", ImportWpBtn).CornerRadius = UDim.new(0, 4)
-
-local WpScroll = Instance.new("ScrollingFrame", Page1)
-WpScroll.Size = UDim2.new(1, 0, 1, -85)
-WpScroll.Position = UDim2.new(0, 0, 0, 56)
-WpScroll.BackgroundTransparency = 1
-WpScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-WpScroll.ScrollBarThickness = 3
-
-local WpListUI = Instance.new("UIListLayout", WpScroll)
-WpListUI.Padding = UDim.new(0, 4)
-
-local SaveWpBtn = Instance.new("TextButton", Page1)
-SaveWpBtn.Size = UDim2.new(1, 0, 0, 24)
-SaveWpBtn.Position = UDim2.new(0, 0, 1, -24)
-SaveWpBtn.Text = "📌 Lưu Tọa Độ Mới Vào Waypoints"
-SaveWpBtn.BackgroundColor3 = Color3.fromRGB(0, 140, 70)
-SaveWpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-SaveWpBtn.Font = Enum.Font.SourceSansBold
-SaveWpBtn.TextSize = 9
-Instance.new("UICorner", SaveWpBtn).CornerRadius = UDim.new(0, 4)
+local WpScroll = Instance.new("ScrollingFrame", Page1); WpScroll.Size = UDim2.new(1, 0, 1, -85); WpScroll.Position = UDim2.new(0, 0, 0, 56); WpScroll.BackgroundTransparency = 1; WpScroll.CanvasSize = UDim2.new(0, 0, 0, 0); WpScroll.ScrollBarThickness = 3
+local WpListUI = Instance.new("UIListLayout", WpScroll); WpListUI.Padding = UDim.new(0, 4)
+local SaveWpBtn = Instance.new("TextButton", Page1); SaveWpBtn.Size = UDim2.new(1, 0, 0, 24); SaveWpBtn.Position = UDim2.new(0, 0, 1, -24); SaveWpBtn.Text = "📌 Lưu Tọa Độ Mới Vào Waypoints"; SaveWpBtn.BackgroundColor3 = Color3.fromRGB(0, 140, 70); SaveWpBtn.TextColor3 = Color3.fromRGB(255, 255, 255); SaveWpBtn.Font = Enum.Font.SourceSansBold; SaveWpBtn.TextSize = 9; Instance.new("UICorner", SaveWpBtn).CornerRadius = UDim.new(0, 4)
 
 local waypoints = {}
-
 local function tweenTo(cframe)
     local char = LocalPlayer.Character
     if char and char:FindFirstChild("HumanoidRootPart") then
         local hrp = char.HumanoidRootPart
         local dist = (hrp.Position - cframe.Position).Magnitude
         local info = TweenInfo.new(dist / 60, Enum.EasingStyle.Linear)
-        local tween = TweenService:Create(hrp, info, {CFrame = cframe})
-        tween:Play()
+        TweenService:Create(hrp, info, {CFrame = cframe}):Play()
     end
 end
 
 local function refreshWaypoints()
     for _, child in pairs(WpScroll:GetChildren()) do if child:IsA("Frame") then child:Destroy() end end
     for idx, cf in ipairs(waypoints) do
-        local Frame = Instance.new("Frame", WpScroll)
-        Frame.Size = UDim2.new(1, -5, 0, 24)
-        Frame.BackgroundColor3 = Color3.fromRGB(22, 22, 22)
-        Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 4)
+        local Frame = Instance.new("Frame", WpScroll); Frame.Size = UDim2.new(1, -5, 0, 24); Frame.BackgroundColor3 = Color3.fromRGB(22, 22, 22); Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 4)
+        local Label = Instance.new("TextLabel", Frame); Label.Size = UDim2.new(0.55, 0, 1, 0); Label.Position = UDim2.new(0.02, 0, 0, 0); Label.Text = string.format("📍 WP #%d: %.1f, %.1f, %.1f", idx, cf.X, cf.Y, cf.Z); Label.TextColor3 = Color3.fromRGB(200, 200, 200); Label.BackgroundTransparency = 1; Label.Font = Enum.Font.SourceSans; Label.TextSize = 9; Label.TextXAlignment = Enum.TextXAlignment.Left
+        local InstantBtn = Instance.new("TextButton", Frame); InstantBtn.Size = UDim2.new(0.2, 0, 0.75, 0); InstantBtn.Position = UDim2.new(0.58, 0, 0.12, 0); InstantBtn.Text = "⚡ Instant"; InstantBtn.BackgroundColor3 = Color3.fromRGB(180, 90, 0); InstantBtn.TextColor3 = Color3.fromRGB(255, 255, 255); InstantBtn.Font = Enum.Font.SourceSansBold; InstantBtn.TextSize = 8; Instance.new("UICorner", InstantBtn).CornerRadius = UDim.new(0, 3)
+        local TweenBtn = Instance.new("TextButton", Frame); TweenBtn.Size = UDim2.new(0.2, 0, 0.75, 0); TweenBtn.Position = UDim2.new(0.79, 0, 0.12, 0); TweenBtn.Text = "✈️ Tween"; TweenBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 180); TweenBtn.TextColor3 = Color3.fromRGB(255, 255, 255); TweenBtn.Font = Enum.Font.SourceSansBold; TweenBtn.TextSize = 8; Instance.new("UICorner", TweenBtn).CornerRadius = UDim.new(0, 3)
 
-        local Label = Instance.new("TextLabel", Frame)
-        Label.Size = UDim2.new(0.55, 0, 1, 0)
-        Label.Position = UDim2.new(0.02, 0, 0, 0)
-        Label.Text = string.format("📍 WP #%d: %.1f, %.1f, %.1f", idx, cf.X, cf.Y, cf.Z)
-        Label.TextColor3 = Color3.fromRGB(200, 200, 200)
-        Label.BackgroundTransparency = 1
-        Label.Font = Enum.Font.SourceSans
-        Label.TextSize = 9
-        Label.TextXAlignment = Enum.TextXAlignment.Left
-
-        local InstantBtn = Instance.new("TextButton", Frame)
-        InstantBtn.Size = UDim2.new(0.2, 0, 0.75, 0)
-        InstantBtn.Position = UDim2.new(0.58, 0, 0.12, 0)
-        InstantBtn.Text = "⚡ Instant"
-        InstantBtn.BackgroundColor3 = Color3.fromRGB(180, 90, 0)
-        InstantBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        InstantBtn.Font = Enum.Font.SourceSansBold
-        InstantBtn.TextSize = 8
-        Instance.new("UICorner", InstantBtn).CornerRadius = UDim.new(0, 3)
-
-        local TweenBtn = Instance.new("TextButton", Frame)
-        TweenBtn.Size = UDim2.new(0.2, 0, 0.75, 0)
-        TweenBtn.Position = UDim2.new(0.79, 0, 0.12, 0)
-        TweenBtn.Text = "✈️ Tween"
-        TweenBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 180)
-        TweenBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        TweenBtn.Font = Enum.Font.SourceSansBold
-        TweenBtn.TextSize = 8
-        Instance.new("UICorner", TweenBtn).CornerRadius = UDim.new(0, 3)
-
-        InstantBtn.MouseButton1Click:Connect(function()
-            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                LocalPlayer.Character.HumanoidRootPart.CFrame = cf
-            end
-        end)
+        InstantBtn.MouseButton1Click:Connect(function() if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then LocalPlayer.Character.HumanoidRootPart.CFrame = cf end end)
         TweenBtn.MouseButton1Click:Connect(function() tweenTo(cf) end)
     end
     WpScroll.CanvasSize = UDim2.new(0, 0, 0, WpListUI.AbsoluteContentSize.Y)
 end
 
-SaveWpBtn.MouseButton1Click:Connect(function()
-    pcall(function()
-        table.insert(waypoints, LocalPlayer.Character.HumanoidRootPart.CFrame)
-        refreshWaypoints()
-    end)
-end)
-
-ExportWpBtn.MouseButton1Click:Connect(function()
-    local exportData = {}
-    for _, cf in ipairs(waypoints) do
-        table.insert(exportData, {cf.X, cf.Y, cf.Z})
-    end
-    if setclipboard then setclipboard(HttpService:JSONEncode(exportData)) end
-end)
-
-ImportWpBtn.MouseButton1Click:Connect(function()
-    pcall(function()
-        if getclipboard then
-            local str = getclipboard()
-            local data = HttpService:JSONDecode(str)
-            waypoints = {}
-            for _, pos in ipairs(data) do
-                table.insert(waypoints, CFrame.new(pos[1], pos[2], pos[3]))
-            end
-            refreshWaypoints()
-        end
-    end)
-end)
-
+SaveWpBtn.MouseButton1Click:Connect(function() pcall(function() table.insert(waypoints, LocalPlayer.Character.HumanoidRootPart.CFrame); refreshWaypoints() end) end)
+ExportWpBtn.MouseButton1Click:Connect(function() local data = {}; for _, cf in ipairs(waypoints) do table.insert(data, {cf.X, cf.Y, cf.Z}) end if setclipboard then setclipboard(HttpService:JSONEncode(data)) end end)
+ImportWpBtn.MouseButton1Click:Connect(function() pcall(function() if getclipboard then local data = HttpService:JSONDecode(getclipboard()); waypoints = {}; for _, pos in ipairs(data) do table.insert(waypoints, CFrame.new(pos[1], pos[2], pos[3])) end refreshWaypoints() end end) end)
 CopyVecBtn.MouseButton1Click:Connect(function() if setclipboard then setclipboard(PosLabel.Text) end end)
-CopyCFBtn.MouseButton1Click:Connect(function()
-    pcall(function()
-        local cf = LocalPlayer.Character.HumanoidRootPart.CFrame
-        if setclipboard then setclipboard(string.format("CFrame.new(%.2f, %.2f, %.2f)", cf.X, cf.Y, cf.Z)) end
-    end)
-end)
+CopyCFBtn.MouseButton1Click:Connect(function() pcall(function() local cf = LocalPlayer.Character.HumanoidRootPart.CFrame; if setclipboard then setclipboard(string.format("CFrame.new(%.2f, %.2f, %.2f)", cf.X, cf.Y, cf.Z)) end end) end)
 
 task.spawn(function()
     while task.wait(0.2) do
         pcall(function()
             local char = LocalPlayer.Character
             if char and char:FindFirstChild("HumanoidRootPart") then
-                local currentPos = char.HumanoidRootPart.Position
-                PosLabel.Text = string.format("X: %.2f | Y: %.2f | Z: %.2f", currentPos.X, currentPos.Y, currentPos.Z)
+                local p = char.HumanoidRootPart.Position
+                PosLabel.Text = string.format("X: %.2f | Y: %.2f | Z: %.2f", p.X, p.Y, p.Z)
             end
         end)
     end
 end)
 
 --=========================================================
--- TAB 2: NPC RADAR (OPTIMIZED)
+-- TAB 2: NPC RADAR
 --=========================================================
-local NpcSearchBox = Instance.new("TextBox", Page2)
-NpcSearchBox.Size = UDim2.new(0.65, 0, 0, 24); NpcSearchBox.PlaceholderText = "🔍 Nhập tên NPC..."; NpcSearchBox.Text = ""; NpcSearchBox.BackgroundColor3 = Color3.fromRGB(24, 24, 24); NpcSearchBox.TextColor3 = Color3.fromRGB(255, 255, 255); NpcSearchBox.Font = Enum.Font.SourceSans; NpcSearchBox.TextSize = 10; Instance.new("UICorner", NpcSearchBox).CornerRadius = UDim.new(0, 4)
-local EspToggleBtn = Instance.new("TextButton", Page2)
-EspToggleBtn.Size = UDim2.new(0.32, 0, 0, 24); EspToggleBtn.Position = UDim2.new(0.68, 0, 0, 0); EspToggleBtn.Text = "👁️ ESP: OFF"; EspToggleBtn.BackgroundColor3 = Color3.fromRGB(140, 35, 35); EspToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255); EspToggleBtn.Font = Enum.Font.SourceSansBold; EspToggleBtn.TextSize = 10; Instance.new("UICorner", EspToggleBtn).CornerRadius = UDim.new(0, 4)
-local NpcScroll = Instance.new("ScrollingFrame", Page2)
-NpcScroll.Size = UDim2.new(1, 0, 1, -30); NpcScroll.Position = UDim2.new(0, 0, 0, 30); NpcScroll.BackgroundTransparency = 1; NpcScroll.CanvasSize = UDim2.new(0, 0, 0, 0); NpcScroll.ScrollBarThickness = 3
+local NpcSearchBox = Instance.new("TextBox", Page2); NpcSearchBox.Size = UDim2.new(0.65, 0, 0, 24); NpcSearchBox.PlaceholderText = "🔍 Nhập tên NPC..."; NpcSearchBox.Text = ""; NpcSearchBox.BackgroundColor3 = Color3.fromRGB(24, 24, 24); NpcSearchBox.TextColor3 = Color3.fromRGB(255, 255, 255); NpcSearchBox.Font = Enum.Font.SourceSans; NpcSearchBox.TextSize = 10; Instance.new("UICorner", NpcSearchBox).CornerRadius = UDim.new(0, 4)
+local EspToggleBtn = Instance.new("TextButton", Page2); EspToggleBtn.Size = UDim2.new(0.32, 0, 0, 24); EspToggleBtn.Position = UDim2.new(0.68, 0, 0, 0); EspToggleBtn.Text = "👁️ ESP: OFF"; EspToggleBtn.BackgroundColor3 = Color3.fromRGB(140, 35, 35); EspToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255); EspToggleBtn.Font = Enum.Font.SourceSansBold; EspToggleBtn.TextSize = 10; Instance.new("UICorner", EspToggleBtn).CornerRadius = UDim.new(0, 4)
+local NpcScroll = Instance.new("ScrollingFrame", Page2); NpcScroll.Size = UDim2.new(1, 0, 1, -30); NpcScroll.Position = UDim2.new(0, 0, 0, 30); NpcScroll.BackgroundTransparency = 1; NpcScroll.CanvasSize = UDim2.new(0, 0, 0, 0); NpcScroll.ScrollBarThickness = 3
 local NpcListUI = Instance.new("UIListLayout", NpcScroll); NpcListUI.Padding = UDim.new(0, 4)
 local espActive = false; local espHighlights = {}
 
@@ -327,10 +201,7 @@ EspToggleBtn.MouseButton1Click:Connect(function()
     espActive = not espActive
     EspToggleBtn.Text = espActive and "👁️ ESP: ON" or "👁️ ESP: OFF"
     EspToggleBtn.BackgroundColor3 = espActive and Color3.fromRGB(0, 140, 70) or Color3.fromRGB(140, 35, 35)
-    if not espActive then 
-        for _, hl in pairs(espHighlights) do if hl then hl:Destroy() end end 
-        espHighlights = {} 
-    end
+    if not espActive then for _, hl in pairs(espHighlights) do if hl then hl:Destroy() end end espHighlights = {} end
 end)
 
 local function updateNpcList()
@@ -344,8 +215,7 @@ local function updateNpcList()
                 local dist = (myHrp and hrp) and math.floor((hrp.Position - myHrp.Position).Magnitude) or 0
                 if espActive and not model:FindFirstChild("NPCHighlight") then
                     pcall(function()
-                        local hl = Instance.new("Highlight", model)
-                        hl.Name = "NPCHighlight"; hl.FillColor = Color3.fromRGB(255, 200, 0); hl.OutlineColor = Color3.fromRGB(255, 0, 0)
+                        local hl = Instance.new("Highlight", model); hl.Name = "NPCHighlight"; hl.FillColor = Color3.fromRGB(255, 200, 0); hl.OutlineColor = Color3.fromRGB(255, 0, 0)
                         table.insert(espHighlights, hl)
                     end)
                 end
@@ -378,9 +248,7 @@ task.spawn(function()
         if autoLoopActive then
             pcall(function()
                 for _, prompt in pairs(Workspace:GetDescendants()) do
-                    if prompt:IsA("ProximityPrompt") and fireproximityprompt then
-                        fireproximityprompt(prompt)
-                    end
+                    if prompt:IsA("ProximityPrompt") and fireproximityprompt then fireproximityprompt(prompt) end
                 end
             end)
         end
@@ -390,21 +258,8 @@ end)
 local ScanScroll = Instance.new("ScrollingFrame", Page3); ScanScroll.Size = UDim2.new(1, 0, 1, -30); ScanScroll.Position = UDim2.new(0, 0, 0, 30); ScanScroll.BackgroundTransparency = 1; ScanScroll.CanvasSize = UDim2.new(0, 0, 0, 0); ScanScroll.ScrollBarThickness = 3
 local ScanListUI = Instance.new("UIListLayout", ScanScroll); ScanListUI.Padding = UDim.new(0, 4)
 
-InstantHoldBtn.MouseButton1Click:Connect(function()
-    pcall(function()
-        for _, prompt in pairs(Workspace:GetDescendants()) do
-            if prompt:IsA("ProximityPrompt") then prompt.HoldDuration = 0 end
-        end
-    end)
-end)
-
-FirePromptsBtn.MouseButton1Click:Connect(function()
-    pcall(function()
-        for _, prompt in pairs(Workspace:GetDescendants()) do
-            if prompt:IsA("ProximityPrompt") and fireproximityprompt then fireproximityprompt(prompt) end
-        end
-    end)
-end)
+InstantHoldBtn.MouseButton1Click:Connect(function() pcall(function() for _, prompt in pairs(Workspace:GetDescendants()) do if prompt:IsA("ProximityPrompt") then prompt.HoldDuration = 0 end end end) end)
+FirePromptsBtn.MouseButton1Click:Connect(function() pcall(function() for _, prompt in pairs(Workspace:GetDescendants()) do if prompt:IsA("ProximityPrompt") and fireproximityprompt then fireproximityprompt(prompt) end end end) end)
 
 local function updateBlockScanner()
     for _, child in pairs(ScanScroll:GetChildren()) do if child:IsA("Frame") then child:Destroy() end end
@@ -507,53 +362,15 @@ local function updateStatsInspector()
 end
 
 --=========================================================
--- TAB 6: REMOTE SPY (ADVANCED HOOK & LOGGING)
+-- TAB 6: REMOTE SPY
 --=========================================================
-local SpyFilterBox = Instance.new("TextBox", Page6)
-SpyFilterBox.Size = UDim2.new(0.48, 0, 0, 24)
-SpyFilterBox.PlaceholderText = "🔍 Lọc tên (bỏ qua)..."
-SpyFilterBox.Text = ""
-SpyFilterBox.BackgroundColor3 = Color3.fromRGB(24, 24, 24)
-SpyFilterBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-SpyFilterBox.Font = Enum.Font.SourceSans
-SpyFilterBox.TextSize = 9
-Instance.new("UICorner", SpyFilterBox).CornerRadius = UDim.new(0, 4)
+local SpyFilterBox = Instance.new("TextBox", Page6); SpyFilterBox.Size = UDim2.new(0.48, 0, 0, 24); SpyFilterBox.PlaceholderText = "🔍 Lọc tên..."; SpyFilterBox.Text = ""; SpyFilterBox.BackgroundColor3 = Color3.fromRGB(24, 24, 24); SpyFilterBox.TextColor3 = Color3.fromRGB(255, 255, 255); SpyFilterBox.Font = Enum.Font.SourceSans; SpyFilterBox.TextSize = 9; Instance.new("UICorner", SpyFilterBox).CornerRadius = UDim.new(0, 4)
+local RemoteSpyToggle = Instance.new("TextButton", Page6); RemoteSpyToggle.Size = UDim2.new(0.24, 0, 0, 24); RemoteSpyToggle.Position = UDim2.new(0.5, 0, 0, 0); RemoteSpyToggle.Text = "📡 Spy: OFF"; RemoteSpyToggle.BackgroundColor3 = Color3.fromRGB(140, 35, 35); RemoteSpyToggle.TextColor3 = Color3.fromRGB(255, 255, 255); RemoteSpyToggle.Font = Enum.Font.SourceSansBold; RemoteSpyToggle.TextSize = 9; Instance.new("UICorner", RemoteSpyToggle).CornerRadius = UDim.new(0, 4)
+local ClearSpyBtn = Instance.new("TextButton", Page6); ClearSpyBtn.Size = UDim2.new(0.24, 0, 0, 24); ClearSpyBtn.Position = UDim2.new(0.75, 0, 0, 0); ClearSpyBtn.Text = "🗑️ Clear Log"; ClearSpyBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60); ClearSpyBtn.TextColor3 = Color3.fromRGB(255, 255, 255); ClearSpyBtn.Font = Enum.Font.SourceSansBold; ClearSpyBtn.TextSize = 9; Instance.new("UICorner", ClearSpyBtn).CornerRadius = UDim.new(0, 4)
+local SpyScroll = Instance.new("ScrollingFrame", Page6); SpyScroll.Size = UDim2.new(1, 0, 1, -30); SpyScroll.Position = UDim2.new(0, 0, 0, 30); SpyScroll.BackgroundTransparency = 1; SpyScroll.CanvasSize = UDim2.new(0, 0, 0, 0); SpyScroll.ScrollBarThickness = 3
+local SpyListUI = Instance.new("UIListLayout", SpyScroll); SpyListUI.Padding = UDim.new(0, 4)
 
-local RemoteSpyToggle = Instance.new("TextButton", Page6)
-RemoteSpyToggle.Size = UDim2.new(0.24, 0, 0, 24)
-RemoteSpyToggle.Position = UDim2.new(0.5, 0, 0, 0)
-RemoteSpyToggle.Text = "📡 Spy: OFF"
-RemoteSpyToggle.BackgroundColor3 = Color3.fromRGB(140, 35, 35)
-RemoteSpyToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
-RemoteSpyToggle.Font = Enum.Font.SourceSansBold
-RemoteSpyToggle.TextSize = 9
-Instance.new("UICorner", RemoteSpyToggle).CornerRadius = UDim.new(0, 4)
-
-local ClearSpyBtn = Instance.new("TextButton", Page6)
-ClearSpyBtn.Size = UDim2.new(0.24, 0, 0, 24)
-ClearSpyBtn.Position = UDim2.new(0.75, 0, 0, 0)
-ClearSpyBtn.Text = "🗑️ Clear Log"
-ClearSpyBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-ClearSpyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-ClearSpyBtn.Font = Enum.Font.SourceSansBold
-ClearSpyBtn.TextSize = 9
-Instance.new("UICorner", ClearSpyBtn).CornerRadius = UDim.new(0, 4)
-
-local SpyScroll = Instance.new("ScrollingFrame", Page6)
-SpyScroll.Size = UDim2.new(1, 0, 1, -30)
-SpyScroll.Position = UDim2.new(0, 0, 0, 30)
-SpyScroll.BackgroundTransparency = 1
-SpyScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-SpyScroll.ScrollBarThickness = 3
-
-local SpyListUI = Instance.new("UIListLayout", SpyScroll)
-SpyListUI.Padding = UDim.new(0, 4)
-
-local spyActive = false
-local blacklistedRemoteNames = {}
-local loggedUIFrames = {}
-local remoteCallCounts = {}
-local remoteLastArgs = {}
+local spyActive = false; local blacklistedRemoteNames = {}; local loggedUIFrames = {}; local remoteCallCounts = {}; local remoteLastArgs = {}
 
 RemoteSpyToggle.MouseButton1Click:Connect(function()
     spyActive = not spyActive
@@ -563,22 +380,8 @@ end)
 
 ClearSpyBtn.MouseButton1Click:Connect(function()
     for _, child in pairs(SpyScroll:GetChildren()) do if child:IsA("Frame") then child:Destroy() end end
-    loggedUIFrames = {}
-    remoteCallCounts = {}
-    remoteLastArgs = {}
-    SpyScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+    loggedUIFrames = {}; remoteCallCounts = {}; remoteLastArgs = {}; SpyScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 end)
-
-local function purgeSimilarRemotes(targetName)
-    blacklistedRemoteNames[targetName] = true
-    for remoteObj, frame in pairs(loggedUIFrames) do
-        if remoteObj.Name == targetName and frame and frame.Parent then
-            frame:Destroy()
-            loggedUIFrames[remoteObj] = nil
-        end
-    end
-    SpyScroll.CanvasSize = UDim2.new(0, 0, 0, SpyListUI.AbsoluteContentSize.Y)
-end
 
 local function logRemoteEvent(remote, args)
     if not spyActive then return end
@@ -587,102 +390,35 @@ local function logRemoteEvent(remote, args)
     local filterText = string.lower(SpyFilterBox.Text)
     if filterText ~= "" and string.find(string.lower(rName), filterText) then return end
 
-    remoteCallCounts[remote] = (remoteCallCounts[remote] or 0) + 1
-    remoteLastArgs[remote] = args
-
+    remoteCallCounts[remote] = (remoteCallCounts[remote] or 0) + 1; remoteLastArgs[remote] = args
     if loggedUIFrames[remote] and loggedUIFrames[remote].Parent then
-        local frame = loggedUIFrames[remote]
-        local infoLabel = frame:FindFirstChild("InfoText")
-        if infoLabel then
-            infoLabel.Text = string.format("⚡ [%s] %s (x%d)", remote.ClassName, rName, remoteCallCounts[remote])
-        end
+        local frame = loggedUIFrames[remote]; local infoLabel = frame:FindFirstChild("InfoText")
+        if infoLabel then infoLabel.Text = string.format("⚡ [%s] %s (x%d)", remote.ClassName, rName, remoteCallCounts[remote]) end
         return
     end
 
-    local ItemFrame = Instance.new("Frame", SpyScroll)
-    ItemFrame.Size = UDim2.new(1, -5, 0, 26)
-    ItemFrame.BackgroundColor3 = Color3.fromRGB(22, 22, 22)
-    Instance.new("UICorner", ItemFrame).CornerRadius = UDim.new(0, 4)
+    local ItemFrame = Instance.new("Frame", SpyScroll); ItemFrame.Size = UDim2.new(1, -5, 0, 26); ItemFrame.BackgroundColor3 = Color3.fromRGB(22, 22, 22); Instance.new("UICorner", ItemFrame).CornerRadius = UDim.new(0, 4)
+    local InfoText = Instance.new("TextLabel", ItemFrame); InfoText.Name = "InfoText"; InfoText.Size = UDim2.new(0.42, 0, 1, 0); InfoText.Position = UDim2.new(0.02, 0, 0, 0); InfoText.Text = string.format("⚡ [%s] %s (x1)", remote.ClassName, rName); InfoText.TextColor3 = Color3.fromRGB(255, 180, 50); InfoText.BackgroundTransparency = 1; InfoText.Font = Enum.Font.SourceSansBold; InfoText.TextSize = 9; InfoText.TextXAlignment = Enum.TextXAlignment.Left
+    local FireTestBtn = Instance.new("TextButton", ItemFrame); FireTestBtn.Size = UDim2.new(0.16, 0, 0.7, 0); FireTestBtn.Position = UDim2.new(0.45, 0, 0.15, 0); FireTestBtn.Text = "🔥 Fire"; FireTestBtn.BackgroundColor3 = Color3.fromRGB(0, 140, 70); FireTestBtn.TextColor3 = Color3.fromRGB(255, 255, 255); FireTestBtn.Font = Enum.Font.SourceSansBold; FireTestBtn.TextSize = 8; Instance.new("UICorner", FireTestBtn).CornerRadius = UDim.new(0, 3)
+    local CopyCallBtn = Instance.new("TextButton", ItemFrame); CopyCallBtn.Size = UDim2.new(0.18, 0, 0.7, 0); CopyCallBtn.Position = UDim2.new(0.62, 0, 0.15, 0); CopyCallBtn.Text = "📋 Copy"; CopyCallBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 180); CopyCallBtn.TextColor3 = Color3.fromRGB(255, 255, 255); CopyCallBtn.Font = Enum.Font.SourceSansBold; CopyCallBtn.TextSize = 8; Instance.new("UICorner", CopyCallBtn).CornerRadius = UDim.new(0, 3)
+    local PurgeBtn = Instance.new("TextButton", ItemFrame); PurgeBtn.Size = UDim2.new(0.18, 0, 0.7, 0); PurgeBtn.Position = UDim2.new(0.81, 0, 0.15, 0); PurgeBtn.Text = "🚫 Purge"; PurgeBtn.BackgroundColor3 = Color3.fromRGB(180, 40, 40); PurgeBtn.TextColor3 = Color3.fromRGB(255, 255, 255); PurgeBtn.Font = Enum.Font.SourceSansBold; PurgeBtn.TextSize = 8; Instance.new("UICorner", PurgeBtn).CornerRadius = UDim.new(0, 3)
 
-    local InfoText = Instance.new("TextLabel", ItemFrame)
-    InfoText.Name = "InfoText"
-    InfoText.Size = UDim2.new(0.42, 0, 1, 0)
-    InfoText.Position = UDim2.new(0.02, 0, 0, 0)
-    InfoText.Text = string.format("⚡ [%s] %s (x1)", remote.ClassName, rName)
-    InfoText.TextColor3 = Color3.fromRGB(255, 180, 50)
-    InfoText.BackgroundTransparency = 1
-    InfoText.Font = Enum.Font.SourceSansBold
-    InfoText.TextSize = 9
-    InfoText.TextXAlignment = Enum.TextXAlignment.Left
-
-    local FireTestBtn = Instance.new("TextButton", ItemFrame)
-    FireTestBtn.Size = UDim2.new(0.16, 0, 0.7, 0)
-    FireTestBtn.Position = UDim2.new(0.45, 0, 0.15, 0)
-    FireTestBtn.Text = "🔥 Fire"
-    FireTestBtn.BackgroundColor3 = Color3.fromRGB(0, 140, 70)
-    FireTestBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    FireTestBtn.Font = Enum.Font.SourceSansBold
-    FireTestBtn.TextSize = 8
-    Instance.new("UICorner", FireTestBtn).CornerRadius = UDim.new(0, 3)
-
-    local CopyCallBtn = Instance.new("TextButton", ItemFrame)
-    CopyCallBtn.Size = UDim2.new(0.18, 0, 0.7, 0)
-    CopyCallBtn.Position = UDim2.new(0.62, 0, 0.15, 0)
-    CopyCallBtn.Text = "📋 Copy"
-    CopyCallBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 180)
-    CopyCallBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    CopyCallBtn.Font = Enum.Font.SourceSansBold
-    CopyCallBtn.TextSize = 8
-    Instance.new("UICorner", CopyCallBtn).CornerRadius = UDim.new(0, 3)
-
-    local PurgeBtn = Instance.new("TextButton", ItemFrame)
-    PurgeBtn.Size = UDim2.new(0.18, 0, 0.7, 0)
-    PurgeBtn.Position = UDim2.new(0.81, 0, 0.15, 0)
-    PurgeBtn.Text = "🚫 Purge"
-    PurgeBtn.BackgroundColor3 = Color3.fromRGB(180, 40, 40)
-    PurgeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    PurgeBtn.Font = Enum.Font.SourceSansBold
-    PurgeBtn.TextSize = 8
-    Instance.new("UICorner", PurgeBtn).CornerRadius = UDim.new(0, 3)
-
-    FireTestBtn.MouseButton1Click:Connect(function()
-        pcall(function()
-            local lastArgs = remoteLastArgs[remote] or {}
-            if remote:IsA("RemoteEvent") then
-                remote:FireServer(unpack(lastArgs))
-            elseif remote:IsA("RemoteFunction") then
-                remote:InvokeServer(unpack(lastArgs))
-            end
-        end)
-    end)
-
-    CopyCallBtn.MouseButton1Click:Connect(function()
-        if setclipboard then
-            setclipboard(string.format("-- Path: game.%s\n-- Call: game.%s:%s(unpack(args))", remote:GetFullName(), remote:GetFullName(), remote:IsA("RemoteEvent") and "FireServer" or "InvokeServer"))
-        end
-    end)
-
-    PurgeBtn.MouseButton1Click:Connect(function()
-        purgeSimilarRemotes(rName)
-    end)
+    FireTestBtn.MouseButton1Click:Connect(function() pcall(function() local lastArgs = remoteLastArgs[remote] or {}; if remote:IsA("RemoteEvent") then remote:FireServer(unpack(lastArgs)) elseif remote:IsA("RemoteFunction") then remote:InvokeServer(unpack(lastArgs)) end end) end)
+    CopyCallBtn.MouseButton1Click:Connect(function() if setclipboard then setclipboard(string.format("game.%s:%s(unpack(args))", remote:GetFullName(), remote:IsA("RemoteEvent") and "FireServer" or "InvokeServer")) end end)
+    PurgeBtn.MouseButton1Click:Connect(function() blacklistedRemoteNames[rName] = true; ItemFrame:Destroy() end)
 
     loggedUIFrames[remote] = ItemFrame
     SpyScroll.CanvasSize = UDim2.new(0, 0, 0, SpyListUI.AbsoluteContentSize.Y)
 end
 
--- Hook Metamethod cho Remote Spy (Bắt chính xác Client -> Server calls)
 local rawMeta = getrawmetatable or debug.getmetatable
 if rawMeta and setreadonly then
-    local gmt = rawMeta(game)
-    local oldNamecall = gmt.__namecall
+    local gmt = rawMeta(game); local oldNamecall = gmt.__namecall
     setreadonly(gmt, false)
-    
     gmt.__namecall = newcclosure(function(self, ...)
         local method = getnamecallmethod()
         if spyActive and (method == "FireServer" or method == "fireServer" or method == "InvokeServer" or method == "invokeServer") then
-            if self and (self:IsA("RemoteEvent") or self:IsA("RemoteFunction")) then
-                logRemoteEvent(self, {...})
-            end
+            if self and (self:IsA("RemoteEvent") or self:IsA("RemoteFunction")) then logRemoteEvent(self, {...}) end
         end
         return oldNamecall(self, ...)
     end)
@@ -693,253 +429,53 @@ end
 -- TAB 7: CONSOLE LOG
 --=========================================================
 local FilterType = "ALL"
-
-local BtnAll = Instance.new("TextButton", Page7)
-BtnAll.Size = UDim2.new(0.24, 0, 0, 22)
-BtnAll.Text = "All"
-BtnAll.BackgroundColor3 = Color3.fromRGB(0, 160, 110)
-BtnAll.TextColor3 = Color3.fromRGB(255, 255, 255)
-BtnAll.Font = Enum.Font.SourceSansBold
-BtnAll.TextSize = 9
-Instance.new("UICorner", BtnAll).CornerRadius = UDim.new(0, 3)
-
-local BtnErr = Instance.new("TextButton", Page7)
-BtnErr.Size = UDim2.new(0.24, 0, 0, 22)
-BtnErr.Position = UDim2.new(0.25, 0, 0, 0)
-BtnErr.Text = "❌ Errors"
-BtnErr.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-BtnErr.TextColor3 = Color3.fromRGB(255, 80, 80)
-BtnErr.Font = Enum.Font.SourceSansBold
-BtnErr.TextSize = 9
-Instance.new("UICorner", BtnErr).CornerRadius = UDim.new(0, 3)
-
-local BtnWarn = Instance.new("TextButton", Page7)
-BtnWarn.Size = UDim2.new(0.24, 0, 0, 22)
-BtnWarn.Position = UDim2.new(0.5, 0, 0, 0)
-BtnWarn.Text = "⚠️ Warnings"
-BtnWarn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-BtnWarn.TextColor3 = Color3.fromRGB(255, 200, 50)
-BtnWarn.Font = Enum.Font.SourceSansBold
-BtnWarn.TextSize = 9
-Instance.new("UICorner", BtnWarn).CornerRadius = UDim.new(0, 3)
-
-local ClearConsoleBtn = Instance.new("TextButton", Page7)
-ClearConsoleBtn.Size = UDim2.new(0.24, 0, 0, 22)
-ClearConsoleBtn.Position = UDim2.new(0.75, 0, 0, 0)
-ClearConsoleBtn.Text = "🗑️ Clear"
-ClearConsoleBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-ClearConsoleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-ClearConsoleBtn.Font = Enum.Font.SourceSansBold
-ClearConsoleBtn.TextSize = 9
-Instance.new("UICorner", ClearConsoleBtn).CornerRadius = UDim.new(0, 3)
-
-local ConsoleScroll = Instance.new("ScrollingFrame", Page7)
-ConsoleScroll.Size = UDim2.new(1, 0, 1, -28)
-ConsoleScroll.Position = UDim2.new(0, 0, 0, 28)
-ConsoleScroll.BackgroundTransparency = 1
-ConsoleScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-ConsoleScroll.ScrollBarThickness = 3
-
-local ConsoleListUI = Instance.new("UIListLayout", ConsoleScroll)
-ConsoleListUI.Padding = UDim.new(0, 3)
-
-local function updateConsoleFilter(selectedType)
-    FilterType = selectedType
-    BtnAll.BackgroundColor3 = (selectedType == "ALL") and Color3.fromRGB(0, 160, 110) or Color3.fromRGB(35, 35, 35)
-    BtnErr.BackgroundColor3 = (selectedType == "ERR") and Color3.fromRGB(180, 40, 40) or Color3.fromRGB(35, 35, 35)
-    BtnWarn.BackgroundColor3 = (selectedType == "WARN") and Color3.fromRGB(180, 130, 0) or Color3.fromRGB(35, 35, 35)
-
-    for _, frame in pairs(ConsoleScroll:GetChildren()) do
-        if frame:IsA("Frame") then
-            local msgType = frame:GetAttribute("MsgType")
-            if selectedType == "ALL" then
-                frame.Visible = true
-            elseif selectedType == "ERR" and msgType == "Error" then
-                frame.Visible = true
-            elseif selectedType == "WARN" and msgType == "Warning" then
-                frame.Visible = true
-            else
-                frame.Visible = false
-            end
-        end
-    end
-end
-
-BtnAll.MouseButton1Click:Connect(function() updateConsoleFilter("ALL") end)
-BtnErr.MouseButton1Click:Connect(function() updateConsoleFilter("ERR") end)
-BtnWarn.MouseButton1Click:Connect(function() updateConsoleFilter("WARN") end)
-
-ClearConsoleBtn.MouseButton1Click:Connect(function()
-    for _, child in pairs(ConsoleScroll:GetChildren()) do if child:IsA("Frame") then child:Destroy() end end
-    ConsoleScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-end)
+local BtnAll = Instance.new("TextButton", Page7); BtnAll.Size = UDim2.new(0.24, 0, 0, 22); BtnAll.Text = "All"; BtnAll.BackgroundColor3 = Color3.fromRGB(0, 160, 110); BtnAll.TextColor3 = Color3.fromRGB(255, 255, 255); BtnAll.Font = Enum.Font.SourceSansBold; BtnAll.TextSize = 9; Instance.new("UICorner", BtnAll).CornerRadius = UDim.new(0, 3)
+local BtnErr = Instance.new("TextButton", Page7); BtnErr.Size = UDim2.new(0.24, 0, 0, 22); BtnErr.Position = UDim2.new(0.25, 0, 0, 0); BtnErr.Text = "❌ Errors"; BtnErr.BackgroundColor3 = Color3.fromRGB(35, 35, 35); BtnErr.TextColor3 = Color3.fromRGB(255, 80, 80); BtnErr.Font = Enum.Font.SourceSansBold; BtnErr.TextSize = 9; Instance.new("UICorner", BtnErr).CornerRadius = UDim.new(0, 3)
+local BtnWarn = Instance.new("TextButton", Page7); BtnWarn.Size = UDim2.new(0.24, 0, 0, 22); BtnWarn.Position = UDim2.new(0.5, 0, 0, 0); BtnWarn.Text = "⚠️ Warnings"; BtnWarn.BackgroundColor3 = Color3.fromRGB(35, 35, 35); BtnWarn.TextColor3 = Color3.fromRGB(255, 200, 50); BtnWarn.Font = Enum.Font.SourceSansBold; BtnWarn.TextSize = 9; Instance.new("UICorner", BtnWarn).CornerRadius = UDim.new(0, 3)
+local ClearConsoleBtn = Instance.new("TextButton", Page7); ClearConsoleBtn.Size = UDim2.new(0.24, 0, 0, 22); ClearConsoleBtn.Position = UDim2.new(0.75, 0, 0, 0); ClearConsoleBtn.Text = "🗑️ Clear"; ClearConsoleBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60); ClearConsoleBtn.TextColor3 = Color3.fromRGB(255, 255, 255); ClearConsoleBtn.Font = Enum.Font.SourceSansBold; ClearConsoleBtn.TextSize = 9; Instance.new("UICorner", ClearConsoleBtn).CornerRadius = UDim.new(0, 3)
+local ConsoleScroll = Instance.new("ScrollingFrame", Page7); ConsoleScroll.Size = UDim2.new(1, 0, 1, -28); ConsoleScroll.Position = UDim2.new(0, 0, 0, 28); ConsoleScroll.BackgroundTransparency = 1; ConsoleScroll.CanvasSize = UDim2.new(0, 0, 0, 0); ConsoleScroll.ScrollBarThickness = 3
+local ConsoleListUI = Instance.new("UIListLayout", ConsoleScroll); ConsoleListUI.Padding = UDim.new(0, 3)
 
 local function appendLog(message, messageType)
-    local Frame = Instance.new("Frame", ConsoleScroll)
-    Frame.Size = UDim2.new(1, -5, 0, 20)
-    Frame.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
-    Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 3)
-
+    local Frame = Instance.new("Frame", ConsoleScroll); Frame.Size = UDim2.new(1, -5, 0, 20); Frame.BackgroundColor3 = Color3.fromRGB(18, 18, 18); Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 3)
     local typeName = "Output"
-    if messageType == Enum.MessageType.MessageError then typeName = "Error"
-    elseif messageType == Enum.MessageType.MessageWarning then typeName = "Warning" end
+    if messageType == Enum.MessageType.MessageError then typeName = "Error" elseif messageType == Enum.MessageType.MessageWarning then typeName = "Warning" end
     Frame:SetAttribute("MsgType", typeName)
 
-    local LogText = Instance.new("TextLabel", Frame)
-    LogText.Size = UDim2.new(0.98, 0, 1, 0)
-    LogText.Position = UDim2.new(0.01, 0, 0, 0)
-    LogText.Text = string.format("[%s] %s", os.date("%H:%M:%S"), message)
-    LogText.BackgroundTransparency = 1
-    LogText.Font = Enum.Font.SourceSans
-    LogText.TextSize = 9
-    LogText.TextXAlignment = Enum.TextXAlignment.Left
-
-    if messageType == Enum.MessageType.MessageOutput then LogText.TextColor3 = Color3.fromRGB(220, 220, 220)
-    elseif messageType == Enum.MessageType.MessageWarning then LogText.TextColor3 = Color3.fromRGB(255, 200, 50)
-    elseif messageType == Enum.MessageType.MessageError then LogText.TextColor3 = Color3.fromRGB(255, 70, 70)
-    else LogText.TextColor3 = Color3.fromRGB(100, 200, 255) end
-
-    if (FilterType == "ERR" and typeName ~= "Error") or (FilterType == "WARN" and typeName ~= "Warning") then
-        Frame.Visible = false
-    end
-
+    local LogText = Instance.new("TextLabel", Frame); LogText.Size = UDim2.new(0.98, 0, 1, 0); LogText.Position = UDim2.new(0.01, 0, 0, 0); LogText.Text = string.format("[%s] %s", os.date("%H:%M:%S"), message); LogText.BackgroundTransparency = 1; LogText.Font = Enum.Font.SourceSans; LogText.TextSize = 9; LogText.TextXAlignment = Enum.TextXAlignment.Left
+    if messageType == Enum.MessageType.MessageOutput then LogText.TextColor3 = Color3.fromRGB(220, 220, 220) elseif messageType == Enum.MessageType.MessageWarning then LogText.TextColor3 = Color3.fromRGB(255, 200, 50) elseif messageType == Enum.MessageType.MessageError then LogText.TextColor3 = Color3.fromRGB(255, 70, 70) else LogText.TextColor3 = Color3.fromRGB(100, 200, 255) end
     ConsoleScroll.CanvasSize = UDim2.new(0, 0, 0, ConsoleListUI.AbsoluteContentSize.Y)
 end
-
 LogService.MessageOut:Connect(appendLog)
 
 --=========================================================
--- TAB 8: GUI INSPECTOR (READ ALL INNER SCRIPTS)
+-- TAB 8: GUI INSPECTOR
 --=========================================================
-local GuiTargetBox = Instance.new("TextBox", Page8)
-GuiTargetBox.Size = UDim2.new(0, 380, 0, 24)
-GuiTargetBox.PlaceholderText = "🔍 Nhập tên Player (để trống = Bản thân)..."
-GuiTargetBox.Text = ""
-GuiTargetBox.BackgroundColor3 = Color3.fromRGB(24, 24, 24)
-GuiTargetBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-GuiTargetBox.Font = Enum.Font.SourceSans
-GuiTargetBox.TextSize = 9
-Instance.new("UICorner", GuiTargetBox).CornerRadius = UDim.new(0, 4)
-
-local ScanGuiBtn = Instance.new("TextButton", Page8)
-ScanGuiBtn.Size = UDim2.new(0, 200, 0, 24)
-ScanGuiBtn.Position = UDim2.new(0, 390, 0, 0)
-ScanGuiBtn.Text = "🔍 Quét GUI"
-ScanGuiBtn.BackgroundColor3 = Color3.fromRGB(0, 140, 70)
-ScanGuiBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-ScanGuiBtn.Font = Enum.Font.SourceSansBold
-ScanGuiBtn.TextSize = 9
-Instance.new("UICorner", ScanGuiBtn).CornerRadius = UDim.new(0, 4)
-
-local GuiScroll = Instance.new("ScrollingFrame", Page8)
-GuiScroll.Size = UDim2.new(1, 0, 1, -30)
-GuiScroll.Position = UDim2.new(0, 0, 0, 30)
-GuiScroll.BackgroundTransparency = 1
-GuiScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-GuiScroll.ScrollBarThickness = 3
-
-local GuiListUI = Instance.new("UIListLayout", GuiScroll)
-GuiListUI.Padding = UDim.new(0, 4)
+local GuiTargetBox = Instance.new("TextBox", Page8); GuiTargetBox.Size = UDim2.new(0, 380, 0, 24); GuiTargetBox.PlaceholderText = "🔍 Nhập tên Player (để trống = Bản thân)..."; GuiTargetBox.Text = ""; GuiTargetBox.BackgroundColor3 = Color3.fromRGB(24, 24, 24); GuiTargetBox.TextColor3 = Color3.fromRGB(255, 255, 255); GuiTargetBox.Font = Enum.Font.SourceSans; GuiTargetBox.TextSize = 9; Instance.new("UICorner", GuiTargetBox).CornerRadius = UDim.new(0, 4)
+local ScanGuiBtn = Instance.new("TextButton", Page8); ScanGuiBtn.Size = UDim2.new(0, 200, 0, 24); ScanGuiBtn.Position = UDim2.new(0, 390, 0, 0); ScanGuiBtn.Text = "🔍 Quét GUI"; ScanGuiBtn.BackgroundColor3 = Color3.fromRGB(0, 140, 70); ScanGuiBtn.TextColor3 = Color3.fromRGB(255, 255, 255); ScanGuiBtn.Font = Enum.Font.SourceSansBold; ScanGuiBtn.TextSize = 9; Instance.new("UICorner", ScanGuiBtn).CornerRadius = UDim.new(0, 4)
+local GuiScroll = Instance.new("ScrollingFrame", Page8); GuiScroll.Size = UDim2.new(1, 0, 1, -30); GuiScroll.Position = UDim2.new(0, 0, 0, 30); GuiScroll.BackgroundTransparency = 1; GuiScroll.CanvasSize = UDim2.new(0, 0, 0, 0); GuiScroll.ScrollBarThickness = 3
+local GuiListUI = Instance.new("UIListLayout", GuiScroll); GuiListUI.Padding = UDim.new(0, 4)
 
 local function scanGuiOfPlayer(targetPlayer)
     for _, child in pairs(GuiScroll:GetChildren()) do if child:IsA("Frame") then child:Destroy() end end
-
     local pGui = targetPlayer:FindFirstChild("PlayerGui")
-    if not pGui then
-        local Frame = Instance.new("Frame", GuiScroll); Frame.Size = UDim2.new(1, 0, 0, 24)
-        local Label = Instance.new("TextLabel", Frame); Label.Size = UDim2.new(1, 0, 1, 0); Label.Text = "Không tìm thấy PlayerGui!" ; Label.TextColor3 = Color3.fromRGB(255, 80, 80)
-        return
-    end
-
+    if not pGui then return end
     for _, screenGui in pairs(pGui:GetChildren()) do
         if screenGui:IsA("ScreenGui") then
             local innerScripts = {}
-            for _, d in pairs(screenGui:GetDescendants()) do
-                if d:IsA("LocalScript") or d:IsA("ModuleScript") or d:IsA("Script") then
-                    table.insert(innerScripts, d)
-                end
-            end
+            for _, d in pairs(screenGui:GetDescendants()) do if d:IsA("LocalScript") or d:IsA("ModuleScript") or d:IsA("Script") then table.insert(innerScripts, d) end end
+            local Frame = Instance.new("Frame", GuiScroll); Frame.Size = UDim2.new(1, -5, 0, math.max(65, 50 + (#innerScripts * 22))); Frame.BackgroundColor3 = Color3.fromRGB(22, 22, 22); Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 4)
+            local InfoText = Instance.new("TextLabel", Frame); InfoText.Size = UDim2.new(0.6, 0, 0, 18); InfoText.Position = UDim2.new(0.02, 0, 0, 4); InfoText.Text = string.format("🖥️ %s (Enabled: %s)", screenGui.Name, tostring(screenGui.Enabled)); InfoText.TextColor3 = Color3.fromRGB(255, 210, 80); InfoText.BackgroundTransparency = 1; InfoText.Font = Enum.Font.SourceSansBold; InfoText.TextSize = 10; InfoText.TextXAlignment = Enum.TextXAlignment.Left
+            local ToggleVisBtn = Instance.new("TextButton", Frame); ToggleVisBtn.Size = UDim2.new(0.3, 0, 0, 20); ToggleVisBtn.Position = UDim2.new(0.67, 0, 0, 4); ToggleVisBtn.Text = screenGui.Enabled and "👁️ Bật/Tắt UI" or "🙈 UI Đang Ẩn"; ToggleVisBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60); ToggleVisBtn.TextColor3 = Color3.fromRGB(255, 255, 255); ToggleVisBtn.Font = Enum.Font.SourceSansBold; ToggleVisBtn.TextSize = 8; Instance.new("UICorner", ToggleVisBtn).CornerRadius = UDim.new(0, 3)
+            ToggleVisBtn.MouseButton1Click:Connect(function() screenGui.Enabled = not screenGui.Enabled; ToggleVisBtn.Text = screenGui.Enabled and "👁️ Bật/Tắt UI" or "🙈 UI Đang Ẩn" end)
 
-            local frameHeight = 50 + (#innerScripts * 22)
-            local Frame = Instance.new("Frame", GuiScroll)
-            Frame.Size = UDim2.new(1, -5, 0, math.max(65, frameHeight))
-            Frame.BackgroundColor3 = Color3.fromRGB(22, 22, 22)
-            Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 4)
-
-            local InfoText = Instance.new("TextLabel", Frame)
-            InfoText.Size = UDim2.new(0.6, 0, 0, 18)
-            InfoText.Position = UDim2.new(0.02, 0, 0, 4)
-            InfoText.Text = string.format("🖥️ %s (Enabled: %s)", screenGui.Name, tostring(screenGui.Enabled))
-            InfoText.TextColor3 = Color3.fromRGB(255, 210, 80)
-            InfoText.BackgroundTransparency = 1
-            InfoText.Font = Enum.Font.SourceSansBold
-            InfoText.TextSize = 10
-            InfoText.TextXAlignment = Enum.TextXAlignment.Left
-
-            local ToggleVisBtn = Instance.new("TextButton", Frame)
-            ToggleVisBtn.Size = UDim2.new(0.3, 0, 0, 20)
-            ToggleVisBtn.Position = UDim2.new(0.67, 0, 0, 4)
-            ToggleVisBtn.Text = screenGui.Enabled and "👁️ Bật/Tắt UI" or "🙈 UI Đang Ẩn"
-            ToggleVisBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-            ToggleVisBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-            ToggleVisBtn.Font = Enum.Font.SourceSansBold
-            ToggleVisBtn.TextSize = 8
-            Instance.new("UICorner", ToggleVisBtn).CornerRadius = UDim.new(0, 3)
-
-            ToggleVisBtn.MouseButton1Click:Connect(function()
-                screenGui.Enabled = not screenGui.Enabled
-                ToggleVisBtn.Text = screenGui.Enabled and "👁️ Bật/Tắt UI" or "🙈 UI Đang Ẩn"
-            end)
-
-            -- Danh sách Scripts
-            local ScriptContainer = Instance.new("Frame", Frame)
-            ScriptContainer.Size = UDim2.new(0.96, 0, 1, -28)
-            ScriptContainer.Position = UDim2.new(0.02, 0, 0, 26)
-            ScriptContainer.BackgroundTransparency = 1
-            
-            local ScriptList = Instance.new("UIListLayout", ScriptContainer)
-            ScriptList.Padding = UDim.new(0, 2)
-
-            if #innerScripts == 0 then
-                local ScriptInfo = Instance.new("TextLabel", ScriptContainer)
-                ScriptInfo.Size = UDim2.new(1, 0, 0, 16)
-                ScriptInfo.Text = "📜 Không có Script bên trong UI này"
-                ScriptInfo.TextColor3 = Color3.fromRGB(140, 140, 140)
-                ScriptInfo.BackgroundTransparency = 1
-                ScriptInfo.Font = Enum.Font.SourceSansItalic
-                ScriptInfo.TextSize = 9
-                ScriptInfo.TextXAlignment = Enum.TextXAlignment.Left
-            else
-                for _, scr in ipairs(innerScripts) do
-                    local ScrSubFrame = Instance.new("Frame", ScriptContainer)
-                    ScrSubFrame.Size = UDim2.new(1, 0, 0, 20)
-                    ScrSubFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-                    Instance.new("UICorner", ScrSubFrame).CornerRadius = UDim.new(0, 3)
-
-                    local ScrLabel = Instance.new("TextLabel", ScrSubFrame)
-                    ScrLabel.Size = UDim2.new(0.65, 0, 1, 0)
-                    ScrLabel.Position = UDim2.new(0.02, 0, 0, 0)
-                    ScrLabel.Text = string.format("📜 %s (%s)", scr.Name, scr.ClassName)
-                    ScrLabel.TextColor3 = Color3.fromRGB(200, 220, 255)
-                    ScrLabel.BackgroundTransparency = 1
-                    ScrLabel.Font = Enum.Font.SourceSans
-                    ScrLabel.TextSize = 9
-                    ScrLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-                    local CopyCodeGuiBtn = Instance.new("TextButton", ScrSubFrame)
-                    CopyCodeGuiBtn.Size = UDim2.new(0.3, 0, 0.8, 0)
-                    CopyCodeGuiBtn.Position = UDim2.new(0.68, 0, 0.1, 0)
-                    CopyCodeGuiBtn.Text = "📋 Copy Code"
-                    CopyCodeGuiBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 180)
-                    CopyCodeGuiBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-                    CopyCodeGuiBtn.Font = Enum.Font.SourceSansBold
-                    CopyCodeGuiBtn.TextSize = 8
-                    Instance.new("UICorner", CopyCodeGuiBtn).CornerRadius = UDim.new(0, 3)
-
-                    CopyCodeGuiBtn.MouseButton1Click:Connect(function()
-                        if setclipboard then setclipboard(getScriptCode(scr)) end
-                    end)
-                end
+            local ScriptContainer = Instance.new("Frame", Frame); ScriptContainer.Size = UDim2.new(0.96, 0, 1, -28); ScriptContainer.Position = UDim2.new(0.02, 0, 0, 26); ScriptContainer.BackgroundTransparency = 1
+            local ScriptList = Instance.new("UIListLayout", ScriptContainer); ScriptList.Padding = UDim.new(0, 2)
+            for _, scr in ipairs(innerScripts) do
+                local ScrSubFrame = Instance.new("Frame", ScriptContainer); ScrSubFrame.Size = UDim2.new(1, 0, 0, 20); ScrSubFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15); Instance.new("UICorner", ScrSubFrame).CornerRadius = UDim.new(0, 3)
+                local ScrLabel = Instance.new("TextLabel", ScrSubFrame); ScrLabel.Size = UDim2.new(0.65, 0, 1, 0); ScrLabel.Position = UDim2.new(0.02, 0, 0, 0); ScrLabel.Text = string.format("📜 %s (%s)", scr.Name, scr.ClassName); ScrLabel.TextColor3 = Color3.fromRGB(200, 220, 255); ScrLabel.BackgroundTransparency = 1; ScrLabel.Font = Enum.Font.SourceSans; ScrLabel.TextSize = 9; ScrLabel.TextXAlignment = Enum.TextXAlignment.Left
+                local CopyCodeGuiBtn = Instance.new("TextButton", ScrSubFrame); CopyCodeGuiBtn.Size = UDim2.new(0.3, 0, 0.8, 0); CopyCodeGuiBtn.Position = UDim2.new(0.68, 0, 0.1, 0); CopyCodeGuiBtn.Text = "📋 Copy Code"; CopyCodeGuiBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 180); CopyCodeGuiBtn.TextColor3 = Color3.fromRGB(255, 255, 255); CopyCodeGuiBtn.Font = Enum.Font.SourceSansBold; CopyCodeGuiBtn.TextSize = 8; Instance.new("UICorner", CopyCodeGuiBtn).CornerRadius = UDim.new(0, 3)
+                CopyCodeGuiBtn.MouseButton1Click:Connect(function() if setclipboard then setclipboard(getScriptCode(scr)) end end)
             end
         end
     end
@@ -947,18 +483,198 @@ local function scanGuiOfPlayer(targetPlayer)
 end
 
 ScanGuiBtn.MouseButton1Click:Connect(function()
-    local targetName = string.lower(GuiTargetBox.Text)
-    local targetPlr = LocalPlayer
-    if targetName ~= "" then
-        for _, p in pairs(Players:GetPlayers()) do
-            if string.find(string.lower(p.Name), targetName) or string.find(string.lower(p.DisplayName), targetName) then
-                targetPlr = p
-                break
-            end
-        end
-    end
+    local targetName = string.lower(GuiTargetBox.Text); local targetPlr = LocalPlayer
+    if targetName ~= "" then for _, p in pairs(Players:GetPlayers()) do if string.find(string.lower(p.Name), targetName) or string.find(string.lower(p.DisplayName), targetName) then targetPlr = p; break end end end
     scanGuiOfPlayer(targetPlr)
 end)
+
+--=========================================================
+-- TAB 9: HITBOX VISUALIZER & EXPANDER (NEW FEATURE)
+--=========================================================
+local HitboxScroll = Instance.new("ScrollingFrame", Page9)
+HitboxScroll.Size = UDim2.new(1, 0, 1, 0)
+HitboxScroll.BackgroundTransparency = 1
+HitboxScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+HitboxScroll.ScrollBarThickness = 3
+
+local HitboxListUI = Instance.new("UIListLayout", HitboxScroll)
+HitboxListUI.Padding = UDim.new(0, 6)
+
+local hitboxConfigs = {
+    NPC = {Box = false, XRay = false, Size = 2, Expand = false, Color = Color3.fromRGB(255, 50, 50)},
+    Players = {Box = false, XRay = false, Size = 2, Expand = false, Color = Color3.fromRGB(50, 150, 255)},
+    Blocks = {Box = false, XRay = false, Color = Color3.fromRGB(0, 255, 120)},
+    InvisBlocks = {Box = false, XRay = false, Color = Color3.fromRGB(255, 255, 0)},
+    TouchTriggers = {Box = false, XRay = false, Color = Color3.fromRGB(200, 0, 255)}
+}
+
+local activeAdornments = {}
+
+local function clearAdornments()
+    for _, v in pairs(activeAdornments) do if v then v:Destroy() end end
+    activeAdornments = {}
+end
+
+local function applyHitboxVisuals()
+    clearAdornments()
+    
+    local function addVisuals(part, config, isChar)
+        if not part or not part:IsA("BasePart") then return end
+        
+        -- Expand Hitbox nếu bật
+        if isChar and config.Expand and part.Name == "HumanoidRootPart" then
+            part.Size = Vector3.new(config.Size, config.Size, config.Size)
+            part.Transparency = 0.6
+            part.BrickColor = BrickColor.new("Bright red")
+            part.Material = Enum.Material.ForceField
+            part.CanCollide = false
+        end
+
+        -- Box Highlight / Selection Box
+        if config.Box then
+            local box = Instance.new("SelectionBox")
+            box.Adornee = part
+            box.Color3 = config.Color
+            box.LineThickness = 0.05
+            box.Parent = part
+            table.insert(activeAdornments, box)
+        end
+
+        -- X-Ray (Nhìn xuyên vật thể)
+        if config.XRay then
+            local handle = Instance.new("BoxHandleAdornment")
+            handle.Size = part.Size
+            handle.Color3 = config.Color
+            handle.Transparency = 0.5
+            handle.AlwaysOnTop = true
+            handle.ZIndex = 5
+            handle.Adornee = part
+            handle.Parent = part
+            table.insert(activeAdornments, handle)
+        end
+    end
+
+    -- Quét toàn bộ workspace
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        pcall(function()
+            if obj:IsA("BasePart") then
+                local parentModel = obj:FindFirstAncestorOfClass("Model")
+                
+                -- NPC Hitbox
+                if parentModel and parentModel:FindFirstChildOfClass("Humanoid") and not Players:GetPlayerFromCharacter(parentModel) then
+                    addVisuals(obj, hitboxConfigs.NPC, true)
+                
+                -- Player Hitbox
+                elseif parentModel and Players:GetPlayerFromCharacter(parentModel) and parentModel ~= LocalPlayer.Character then
+                    addVisuals(obj, hitboxConfigs.Players, true)
+                
+                -- Khối Tàng Hình (Invis Block)
+                elseif obj.Transparency > 0.8 or not obj.CanCollide then
+                    addVisuals(obj, hitboxConfigs.InvisBlocks, false)
+                
+                -- Trigger / Touch Blocks (Khối va chạm sự kiện)
+                elseif obj:FindFirstChildOfClass("TouchTransmitter") then
+                    addVisuals(obj, hitboxConfigs.TouchTriggers, false)
+                
+                -- Khối thường (General Blocks)
+                else
+                    addVisuals(obj, hitboxConfigs.Blocks, false)
+                end
+            end
+        end)
+    end
+end
+
+local function createHitboxCard(title, configKey, hasExpand)
+    local cfg = hitboxConfigs[configKey]
+    local Card = Instance.new("Frame", HitboxScroll)
+    Card.Size = UDim2.new(1, -5, 0, hasExpand and 65 or 40)
+    Card.BackgroundColor3 = Color3.fromRGB(22, 22, 22)
+    Instance.new("UICorner", Card).CornerRadius = UDim.new(0, 5)
+
+    local TitleLabel = Instance.new("TextLabel", Card)
+    TitleLabel.Size = UDim2.new(0.3, 0, 0, 20)
+    TitleLabel.Position = UDim2.new(0.02, 0, 0, 4)
+    TitleLabel.Text = title
+    TitleLabel.TextColor3 = cfg.Color
+    TitleLabel.BackgroundTransparency = 1
+    TitleLabel.Font = Enum.Font.SourceSansBold
+    TitleLabel.TextSize = 10
+    TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+    local BoxToggleBtn = Instance.new("TextButton", Card)
+    BoxToggleBtn.Size = UDim2.new(0.3, 0, 0, 22)
+    BoxToggleBtn.Position = UDim2.new(0.35, 0, 0, 4)
+    BoxToggleBtn.Text = "📦 Box: OFF"
+    BoxToggleBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    BoxToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    BoxToggleBtn.Font = Enum.Font.SourceSansBold
+    BoxToggleBtn.TextSize = 8
+    Instance.new("UICorner", BoxToggleBtn).CornerRadius = UDim.new(0, 3)
+
+    local XRayToggleBtn = Instance.new("TextButton", Card)
+    XRayToggleBtn.Size = UDim2.new(0.3, 0, 0, 22)
+    XRayToggleBtn.Position = UDim2.new(0.67, 0, 0, 4)
+    XRayToggleBtn.Text = "👁️ X-Ray: OFF"
+    XRayToggleBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    XRayToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    XRayToggleBtn.Font = Enum.Font.SourceSansBold
+    XRayToggleBtn.TextSize = 8
+    Instance.new("UICorner", XRayToggleBtn).CornerRadius = UDim.new(0, 3)
+
+    BoxToggleBtn.MouseButton1Click:Connect(function()
+        cfg.Box = not cfg.Box
+        BoxToggleBtn.Text = cfg.Box and "📦 Box: ON" or "📦 Box: OFF"
+        BoxToggleBtn.BackgroundColor3 = cfg.Box and Color3.fromRGB(0, 140, 70) or Color3.fromRGB(50, 50, 50)
+        applyHitboxVisuals()
+    end)
+
+    XRayToggleBtn.MouseButton1Click:Connect(function()
+        cfg.XRay = not cfg.XRay
+        XRayToggleBtn.Text = cfg.XRay and "👁️ X-Ray: ON" or "👁️ X-Ray: OFF"
+        XRayToggleBtn.BackgroundColor3 = cfg.XRay and Color3.fromRGB(0, 140, 70) or Color3.fromRGB(50, 50, 50)
+        applyHitboxVisuals()
+    end)
+
+    if hasExpand then
+        local ExpandToggleBtn = Instance.new("TextButton", Card)
+        ExpandToggleBtn.Size = UDim2.new(0.45, 0, 0, 22)
+        ExpandToggleBtn.Position = UDim2.new(0.02, 0, 0, 34)
+        ExpandToggleBtn.Text = "💥 Expand Hitbox: OFF"
+        ExpandToggleBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        ExpandToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        ExpandToggleBtn.Font = Enum.Font.SourceSansBold
+        ExpandToggleBtn.TextSize = 8
+        Instance.new("UICorner", ExpandToggleBtn).CornerRadius = UDim.new(0, 3)
+
+        local SizeInput = Instance.new("TextBox", Card)
+        SizeInput.Size = UDim2.new(0.48, 0, 0, 22)
+        SizeInput.Position = UDim2.new(0.49, 0, 0, 34)
+        SizeInput.PlaceholderText = "Kích thước (Mặc định: 10)..."
+        SizeInput.Text = "10"
+        SizeInput.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+        SizeInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+        SizeInput.Font = Enum.Font.SourceSans
+        SizeInput.TextSize = 8
+        Instance.new("UICorner", SizeInput).CornerRadius = UDim.new(0, 3)
+
+        ExpandToggleBtn.MouseButton1Click:Connect(function()
+            cfg.Expand = not cfg.Expand
+            cfg.Size = tonumber(SizeInput.Text) or 10
+            ExpandToggleBtn.Text = cfg.Expand and "💥 Expand Hitbox: ON" or "💥 Expand Hitbox: OFF"
+            ExpandToggleBtn.BackgroundColor3 = cfg.Expand and Color3.fromRGB(180, 80, 0) or Color3.fromRGB(50, 50, 50)
+            applyHitboxVisuals()
+        end)
+    end
+end
+
+createHitboxCard("👾 NPC Hitbox", "NPC", true)
+createHitboxCard("👤 Player Hitbox", "Players", true)
+createHitboxCard("🧱 Khối Thường (Blocks)", "Blocks", false)
+createHitboxCard("👻 Khối Tàng Hình (Invis)", "InvisBlocks", false)
+createHitboxCard("⚡ Touch/Trigger Hitbox", "TouchTriggers", false)
+
+HitboxScroll.CanvasSize = UDim2.new(0, 0, 0, HitboxListUI.AbsoluteContentSize.Y)
 
 -- VÒNG LẶP AUTO UPDATE TAB (CHỈ CHẠY KHI TAB HIỂN THỊ - TRÁNH LAG)
 task.spawn(function()
@@ -968,6 +684,7 @@ task.spawn(function()
             if Page3.Visible then updateBlockScanner() end
             if Page4.Visible then updateBackpackInspector() end
             if Page5.Visible then updateStatsInspector() end
+            if Page9.Visible then applyHitboxVisuals() end
         end)
     end
 end)
