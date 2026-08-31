@@ -1,15 +1,9 @@
 -- ================================================================
---  🎯 AIMBOT PRO v2.0  —  tookit  (UI FIX + ESP + WALLBANG)
---  Tự động nhắm & bắn mục tiêu (Players)
---  Toggle: Right Control
---  Tính năng: Crosshair, ESP địch, Wallbang, Auto Fire
+--  🎯 AIMBOT PRO v2.1  —  tookit  (UI FIX HOÀN TOÀN)
 -- ================================================================
 
 local Tookit = {} -- "tookit" marker
 
--- ================================================================
--- SERVICES
--- ================================================================
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -20,9 +14,6 @@ local Camera = workspace.CurrentCamera
 
 repeat task.wait() until LocalPlayer and LocalPlayer.Character
 
--- ================================================================
--- SETTINGS
--- ================================================================
 local settings = {
     enabled = false,
     autoFire = false,
@@ -33,9 +24,7 @@ local settings = {
     crosshairEnabled = false,
 }
 
--- ================================================================
 -- UTILITY
--- ================================================================
 local function isAlive(plr)
     local char = plr.Character
     if not char then return false end
@@ -49,50 +38,79 @@ local function getHead(plr)
     return char:FindFirstChild("Head")
 end
 
-local function getTargetPart(plr)
-    -- Luôn ngắm đầu
-    return getHead(plr)
-end
-
-local function getDistance(pos1, pos2)
-    return (pos1 - pos2).Magnitude
-end
-
 -- ================================================================
--- UI CREATION (FIX: KHÔNG BỊ TRÙNG)
+-- UI CREATION - FIX PARENT
 -- ================================================================
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "AimbotPro"
 ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-local function safeParent()
-    local ok, err = pcall(function()
-        if gethui then
-            ScreenGui.Parent = gethui()
-            return
+-- Hàm gán parent an toàn
+local function setParent()
+    local success = false
+    -- Thử gethui
+    if not success and type(gethui) == "function" then
+        local ok, parent = pcall(gethui)
+        if ok and parent then
+            ScreenGui.Parent = parent
+            success = true
+            print("[Aimbot] Parent: gethui")
         end
-        if syn and syn.protect_gui then
-            syn.protect_gui(ScreenGui)
+    end
+    -- Thử syn
+    if not success and type(syn) == "table" and type(syn.protect_gui) == "function" then
+        local ok = pcall(syn.protect_gui, ScreenGui)
+        if ok then
             ScreenGui.Parent = CoreGui
-            return
+            success = true
+            print("[Aimbot] Parent: syn.protect_gui + CoreGui")
         end
-        ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
-    end)
-    if not ok then
-        ScreenGui.Parent = CoreGui
+    end
+    -- Thử CoreGui
+    if not success then
+        local ok, err = pcall(function()
+            ScreenGui.Parent = CoreGui
+        end)
+        if ok then
+            success = true
+            print("[Aimbot] Parent: CoreGui")
+        end
+    end
+    -- Cuối cùng là PlayerGui
+    if not success then
+        local ok, err = pcall(function()
+            local pg = LocalPlayer:WaitForChild("PlayerGui")
+            ScreenGui.Parent = pg
+        end)
+        if ok then
+            success = true
+            print("[Aimbot] Parent: PlayerGui")
+        end
+    end
+    if not success then
+        warn("[Aimbot] Không thể gán parent cho ScreenGui!")
     end
 end
-safeParent()
+
+setParent()
+
+-- Nếu vẫn chưa có parent, thử lại sau 0.2s
 if not ScreenGui.Parent then
-    task.delay(0.1, function() ScreenGui.Parent = CoreGui end)
+    task.delay(0.2, function()
+        if not ScreenGui.Parent then
+            ScreenGui.Parent = CoreGui
+            print("[Aimbot] Parent: CoreGui (delay)")
+        end
+    end)
 end
 
 -- ================================================================
--- MAIN FRAME
+-- MAIN FRAME (Đơn giản hóa để kiểm tra)
 -- ================================================================
-local MainFrame = Instance.new("Frame", ScreenGui)
-MainFrame.Size = UDim2.new(0, 340, 0, 420)
-MainFrame.Position = UDim2.new(0.5, -170, 0.5, -210)
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 320, 0, 380)
+MainFrame.Position = UDim2.new(0.5, -160, 0.5, -190)
 MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 28)
 MainFrame.Active = true
 MainFrame.Draggable = true
@@ -100,12 +118,13 @@ Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 12)
 local Stroke = Instance.new("UIStroke", MainFrame)
 Stroke.Color = Color3.fromRGB(255, 50, 50)
 Stroke.Thickness = 2
+MainFrame.Parent = ScreenGui
 
 -- Title
 local Title = Instance.new("TextLabel", MainFrame)
 Title.Size = UDim2.new(1, -20, 0, 30)
 Title.Position = UDim2.new(0, 10, 0, 4)
-Title.Text = "🎯 AIMBOT PRO v2.0  —  tookit"
+Title.Text = "🎯 AIMBOT PRO  —  tookit"
 Title.TextColor3 = Color3.fromRGB(255, 50, 50)
 Title.BackgroundTransparency = 1
 Title.Font = Enum.Font.SourceSansBold
@@ -122,11 +141,11 @@ CloseBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
 CloseBtn.Font = Enum.Font.SourceSansBold
 CloseBtn.TextSize = 14
 Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 8)
-CloseBtn.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
+CloseBtn.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
 
--- ================================================================
--- CONTROLS CONTAINER (Dùng UIListLayout để tránh trùng)
--- ================================================================
+-- Controls
 local Controls = Instance.new("ScrollingFrame", MainFrame)
 Controls.Size = UDim2.new(1, -16, 1, -38)
 Controls.Position = UDim2.new(0, 8, 0, 38)
@@ -142,15 +161,8 @@ local padding = Instance.new("UIPadding", Controls)
 padding.PaddingTop = UDim.new(0, 6)
 padding.PaddingBottom = UDim.new(0, 6)
 
--- ================================================================
--- HELPER FUNCTIONS TẠO CONTROL (CÓ LAYOUT ORDER)
--- ================================================================
 local order = 0
-
-local function nextOrder()
-    order = order + 1
-    return order
-end
+local function nextOrder() order = order + 1 return order end
 
 local function createToggle(label, callback)
     local frame = Instance.new("Frame", Controls)
@@ -252,60 +264,19 @@ local function createSlider(label, minVal, maxVal, defaultVal, callback)
     return valLbl
 end
 
-local function createDropdown(label, options, defaultIndex, callback)
-    local frame = Instance.new("Frame", Controls)
-    frame.Size = UDim2.new(0.9, 0, 0, 28)
-    frame.BackgroundTransparency = 1
-    frame.LayoutOrder = nextOrder()
-
-    local lbl = Instance.new("TextLabel", frame)
-    lbl.Size = UDim2.new(0.5, 0, 1, 0)
-    lbl.Text = label
-    lbl.TextColor3 = Color3.fromRGB(200, 200, 210)
-    lbl.BackgroundTransparency = 1
-    lbl.Font = Enum.Font.SourceSans
-    lbl.TextSize = 12
-    lbl.TextXAlignment = Enum.TextXAlignment.Left
-
-    local btn = Instance.new("TextButton", frame)
-    btn.Size = UDim2.new(0.3, 0, 0.8, 0)
-    btn.Position = UDim2.new(0.6, 0, 0.1, 0)
-    btn.Text = options[defaultIndex] or options[1]
-    btn.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.Font = Enum.Font.SourceSansBold
-    btn.TextSize = 11
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
-
-    local idx = defaultIndex or 1
-    btn.MouseButton1Click:Connect(function()
-        idx = idx % #options + 1
-        btn.Text = options[idx]
-        callback(options[idx])
-    end)
-    return btn
-end
-
 -- Tạo các control
 createToggle("🎯 Aimbot", function(s) settings.enabled = s end)
 createToggle("🔥 Auto Fire", function(s) settings.autoFire = s end)
-createToggle("🧱 Wallbang (xuyên tường)", function(s) settings.wallbang = s end)
-createToggle("👁️ ESP địch", function(s) 
+createToggle("🧱 Wallbang", function(s) settings.wallbang = s end)
+createToggle("👁️ ESP", function(s) 
     settings.espEnabled = s
-    if not s then
-        clearESP()
-    else
-        updateESP()
-    end
+    if not s then clearESP() else updateESP() end
 end)
-createToggle("🎯 Crosshair", function(s) 
-    settings.crosshairEnabled = s
-    updateCrosshair()
-end)
+createToggle("🎯 Crosshair", function(s) settings.crosshairEnabled = s; updateCrosshair() end)
 createSlider("FOV (độ)", 5, 180, 45, function(v) settings.fov = v end)
 createSlider("Smoothing", 1, 20, 5, function(v) settings.smoothing = v end)
 
--- Status label
+-- Status
 local statusLabel = Instance.new("TextLabel", Controls)
 statusLabel.Size = UDim2.new(0.9, 0, 0, 24)
 statusLabel.Text = "🔴 No target"
@@ -330,24 +301,18 @@ keyHint.LayoutOrder = nextOrder()
 -- CROSSHAIR
 -- ================================================================
 local crosshair = nil
-
 function updateCrosshair()
     if crosshair then crosshair:Destroy() crosshair = nil end
     if not settings.crosshairEnabled then return end
-
     local gui = Instance.new("ScreenGui", ScreenGui)
     gui.Name = "Crosshair"
     gui.ResetOnSpawn = false
     gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     gui.IgnoreGuiInset = true
-
     local frame = Instance.new("Frame", gui)
     frame.Size = UDim2.new(0, 0, 0, 0)
     frame.Position = UDim2.new(0.5, -15, 0.5, -15)
     frame.BackgroundTransparency = 1
-
-    -- Dấu cộng
-    local colors = {Color3.fromRGB(0, 255, 0)}
     local function line(w, h, x, y, color)
         local l = Instance.new("Frame", frame)
         l.Size = UDim2.new(0, w, 0, h)
@@ -358,15 +323,12 @@ function updateCrosshair()
     end
     line(2, 20, 0, 0)
     line(20, 2, 0, 0)
-
-    -- Tâm chấm
     local dot = Instance.new("Frame", frame)
     dot.Size = UDim2.new(0, 4, 0, 4)
     dot.Position = UDim2.new(0, -2, 0, -2)
     dot.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
     dot.BorderSizePixel = 0
     Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
-
     crosshair = gui
 end
 
@@ -374,7 +336,6 @@ end
 -- ESP
 -- ================================================================
 local espObjects = {}
-
 function clearESP()
     for _, obj in ipairs(espObjects) do
         if obj and obj.Parent then obj:Destroy() end
@@ -383,15 +344,8 @@ function clearESP()
 end
 
 function updateESP()
-    if not settings.espEnabled then
-        clearESP()
-        return
-    end
-
-    -- Xóa esp cũ
+    if not settings.espEnabled then clearESP() return end
     clearESP()
-
-    -- Tạo esp cho từng người chơi
     for _, plr in ipairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer and isAlive(plr) then
             local char = plr.Character
@@ -400,7 +354,6 @@ function updateESP()
                 local head = char:FindFirstChild("Head")
                 local hum = char:FindFirstChildOfClass("Humanoid")
                 if hrp and head then
-                    -- Box
                     local box = Instance.new("BoxHandleAdornment")
                     box.Size = Vector3.new(3, 5, 2)
                     box.CFrame = hrp.CFrame * CFrame.new(0, 2.5, 0)
@@ -411,15 +364,12 @@ function updateESP()
                     box.Adornee = hrp
                     box.Parent = hrp
                     table.insert(espObjects, box)
-
-                    -- Tên + máu + khoảng cách
                     local bill = Instance.new("BillboardGui")
                     bill.Size = UDim2.new(0, 200, 0, 50)
                     bill.Adornee = head
                     bill.AlwaysOnTop = true
                     bill.StudsOffset = Vector3.new(0, 2.5, 0)
                     bill.Parent = head
-
                     local lbl = Instance.new("TextLabel", bill)
                     lbl.Size = UDim2.new(1, 0, 0.5, 0)
                     lbl.BackgroundTransparency = 1
@@ -429,7 +379,6 @@ function updateESP()
                     lbl.Font = Enum.Font.SourceSansBold
                     lbl.TextStrokeTransparency = 0.3
                     lbl.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-
                     local health = Instance.new("TextLabel", bill)
                     health.Size = UDim2.new(1, 0, 0.4, 0)
                     health.Position = UDim2.new(0, 0, 0.5, 0)
@@ -440,7 +389,6 @@ function updateESP()
                     health.Font = Enum.Font.SourceSans
                     health.TextStrokeTransparency = 0.3
                     health.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-
                     table.insert(espObjects, bill)
                 end
             end
@@ -448,13 +396,10 @@ function updateESP()
     end
 end
 
--- Cập nhật ESP mỗi 1s
 task.spawn(function()
     while ScreenGui.Parent do
         task.wait(1)
-        if settings.espEnabled then
-            updateESP()
-        end
+        if settings.espEnabled then updateESP() end
     end
 end)
 
@@ -470,20 +415,20 @@ local function getTargets()
 
     for _, plr in ipairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer and isAlive(plr) then
-            local head = getTargetPart(plr)
+            local head = getHead(plr)
             if head and head.Parent and head.Parent ~= myChar then
                 local pos = head.Position
                 local dir = (pos - cameraCF.Position).Unit
                 local angle = math.deg(math.acos(math.clamp(cameraCF.LookVector:Dot(dir), -1, 1)))
-                -- Nếu wallbang thì bỏ qua kiểm tra vật cản
-                if settings.wallbang or not settings.wallbang then
-                    -- Kiểm tra xuyên tường: raycast
+                if settings.wallbang then
+                    -- Chấp nhận mọi target trong FOV
+                else
                     local ray = Ray.new(cameraCF.Position, dir * 500)
                     local hit, hitPos = Workspace:FindPartOnRay(ray, myChar)
                     if hit and hitPos then
                         local distToTarget = (pos - hitPos).Magnitude
-                        if distToTarget > 5 and not settings.wallbang then
-                            -- Có vật cản và không wallbang
+                        if distToTarget > 5 then
+                            -- Có vật cản
                             goto continue
                         end
                     end
@@ -521,36 +466,25 @@ local function fire()
     return false
 end
 
--- ================================================================
--- MAIN LOOP
--- ================================================================
 RunService.RenderStepped:Connect(function()
     if not settings.enabled then
         statusLabel.Text = "🔴 Disabled"
         statusLabel.TextColor3 = Color3.fromRGB(200, 80, 80)
         return
     end
-
     local targets = getTargets()
     if #targets == 0 then
         statusLabel.Text = "🔴 No target"
         statusLabel.TextColor3 = Color3.fromRGB(200, 80, 80)
         return
     end
-
     local best = targets[1]
     statusLabel.Text = "🎯 " .. best.player.DisplayName .. " (" .. math.floor(best.dist) .. "m)"
     statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-
     aimAt(best.part)
-    if settings.autoFire then
-        fire()
-    end
+    if settings.autoFire then fire() end
 end)
 
--- ================================================================
--- HOTKEY TOGGLE UI
--- ================================================================
 UserInputService.InputBegan:Connect(function(input, gpe)
     if gpe then return end
     if input.KeyCode == Enum.KeyCode.RightControl then
@@ -558,9 +492,5 @@ UserInputService.InputBegan:Connect(function(input, gpe)
     end
 end)
 
--- ================================================================
--- INIT
--- ================================================================
-print("🎯 AIMBOT PRO v2.0 loaded — tookit")
+print("🎯 AIMBOT PRO v2.1 loaded — tookit")
 print("⌨️  Right Control để toggle UI")
-print("📌 Các tính năng: Aimbot, Auto Fire, Wallbang, ESP, Crosshair")
