@@ -1,4 +1,4 @@
--- tookit – nâng cấp: chỉ quét Model tên "SpawnItem" + Auto Return
+-- tookit – nâng cấp với lọc "slot" và Auto Return mặc định
 -- Services
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
@@ -8,12 +8,12 @@ local LocalPlayer = Players.LocalPlayer
 local savedWaypoints = {}
 
 -- Biến cho Auto Return
-local returnPoint = nil
-local autoReturnEnabled = false
-local returnDelay = 2
+local returnPoint = nil            -- CFrame điểm về
+local autoReturnEnabled = true     -- Bật mặc định để tự động quay về
+local returnDelay = 1              -- Thời gian chờ (giây) trước khi quay về
 
 --------------------------------------------------------------------------------
--- 1. TẠO GIAO DIỆN (UI) – giữ nguyên
+-- 1. TẠO GIAO DIỆN (UI)
 --------------------------------------------------------------------------------
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "WaypointAndEggTPGui"
@@ -37,7 +37,7 @@ local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, -70, 0, 30)
 Title.Position = UDim2.new(0, 10, 0, 5)
 Title.BackgroundTransparency = 1
-Title.Text = "TP SpawnItem & Lưu Tọa Độ"
+Title.Text = "TP Trứng & Lưu Tọa Độ"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextSize = 14
 Title.Font = Enum.Font.SourceSansBold
@@ -67,6 +67,7 @@ ControlFrame.Position = UDim2.new(0, 10, 0, 35)
 ControlFrame.BackgroundTransparency = 1
 ControlFrame.Parent = MainFrame
 
+-- Nút "Set Return"
 local SetReturnBtn = Instance.new("TextButton")
 SetReturnBtn.Size = UDim2.new(0, 70, 1, 0)
 SetReturnBtn.Position = UDim2.new(0, 0, 0, 0)
@@ -81,6 +82,7 @@ local SetCorner = Instance.new("UICorner")
 SetCorner.CornerRadius = UDim.new(0, 4)
 SetCorner.Parent = SetReturnBtn
 
+-- Nút "Return"
 local ReturnBtn = Instance.new("TextButton")
 ReturnBtn.Size = UDim2.new(0, 60, 1, 0)
 ReturnBtn.Position = UDim2.new(0, 75, 0, 0)
@@ -95,11 +97,12 @@ local ReturnCorner = Instance.new("UICorner")
 ReturnCorner.CornerRadius = UDim.new(0, 4)
 ReturnCorner.Parent = ReturnBtn
 
+-- Nút toggle Auto Return
 local AutoToggle = Instance.new("TextButton")
 AutoToggle.Size = UDim2.new(0, 70, 1, 0)
 AutoToggle.Position = UDim2.new(0, 140, 0, 0)
-AutoToggle.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-AutoToggle.Text = "Auto: TẮT"
+AutoToggle.BackgroundColor3 = Color3.fromRGB(0, 170, 80)  -- mặc định bật
+AutoToggle.Text = "Auto: BẬT"
 AutoToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
 AutoToggle.Font = Enum.Font.SourceSansBold
 AutoToggle.TextSize = 11
@@ -109,12 +112,13 @@ local AutoCorner = Instance.new("UICorner")
 AutoCorner.CornerRadius = UDim.new(0, 4)
 AutoCorner.Parent = AutoToggle
 
+-- Ô nhập delay
 local DelayBox = Instance.new("TextBox")
 DelayBox.Size = UDim2.new(0, 40, 1, 0)
 DelayBox.Position = UDim2.new(0, 215, 0, 0)
 DelayBox.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-DelayBox.PlaceholderText = "2s"
-DelayBox.Text = "2"
+DelayBox.PlaceholderText = "1s"
+DelayBox.Text = "1"
 DelayBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 DelayBox.Font = Enum.Font.SourceSans
 DelayBox.TextSize = 13
@@ -179,7 +183,7 @@ UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 UIListLayout.Padding = UDim.new(0, 5)
 
 --------------------------------------------------------------------------------
--- 5. HÀM DỊCH CHUYỂN & TẠO NÚT BẤM (có Auto Return)
+-- 5. HÀM DỊCH CHUYỂN & TẠO NÚT BẤM
 --------------------------------------------------------------------------------
 local function teleportTo(targetCFrame)
     local char = LocalPlayer.Character
@@ -193,11 +197,13 @@ end
 
 local function teleportWithReturn(targetCFrame)
     if autoReturnEnabled then
+        -- Nếu chưa có điểm về, tự động lưu vị trí hiện tại
         if not returnPoint then
             local char = LocalPlayer.Character
             if char and char:FindFirstChild("HumanoidRootPart") then
                 returnPoint = char.HumanoidRootPart.CFrame
             else
+                -- Không có nhân vật, vẫn TP nhưng không về được
                 teleportTo(targetCFrame)
                 return
             end
@@ -265,49 +271,76 @@ local function createTpButton(name, getCFrameFunc, color, isCustomWaypoint)
 end
 
 --------------------------------------------------------------------------------
--- 6. LOGIC QUÉT: CHỈ LẤY MODEL CÓ TÊN "SpawnItem"
+-- 6. LOGIC QUÉT TRỨNG, VẬT THỂ (có lọc "slot")
 --------------------------------------------------------------------------------
+local keywords = {"egg", "pet", "animal", "mob", "chest", "orb", "coin", "gem", "crystal", "spawn"}
+local ignoredNames = {
+    ["Baseplate"] = true,
+    ["Terrain"] = true,
+    ["Camera"] = true,
+    ["Workspace"] = true
+}
+-- Thêm lọc theo tên chứa "slot" (không phân biệt hoa thường)
+local function isSlotName(name)
+    return string.find(string.lower(name), "slot") ~= nil
+end
+
 local function renderAll()
-    -- Xóa danh sách cũ
+    -- Clear danh sách cũ
     for _, child in ipairs(ScrollFrame:GetChildren()) do
         if child:IsA("Frame") then
             child:Destroy()
         end
     end
 
-    -- 1. HIỂN THỊ CÁC ĐIỂM LƯU TAY
+    -- 1. HIỂN THỊ CÁC TỌA ĐỘ ĐÃ LƯU
     for wpName, cf in pairs(savedWaypoints) do
         createTpButton("[Đã Lưu] " .. wpName, function()
             return cf
         end, Color3.fromRGB(180, 100, 20), true)
     end
 
-    -- 2. QUÉT CÁC MODEL TÊN "SpawnItem" (không phân biệt hoa thường)
+    -- 2. QUÉT TRỨNG VÀ VẬT THỂ (bỏ qua "slot")
     local foundObjects = {}
     for _, obj in ipairs(Workspace:GetDescendants()) do
-        if obj:IsA("Model") and string.lower(obj.Name) == "spawnitem" then
-            -- Tránh trùng lặp (mỗi model chỉ một lần)
-            if not foundObjects[obj] then
-                foundObjects[obj] = true
-                createTpButton(
-                    "[SpawnItem] " .. obj.Name,
-                    function()
-                        return obj:GetPivot()
-                    end,
-                    Color3.fromRGB(60, 160, 220), -- màu xanh dương
-                    false
-                )
+        -- Bỏ qua các đối tượng có tên bị cấm hoặc chứa "slot"
+        if not ignoredNames[obj.Name] and not isSlotName(obj.Name) and not Players:GetPlayerFromCharacter(obj) then
+            local objNameLower = string.lower(obj.Name)
+            local isMatch = false
+            for _, key in ipairs(keywords) do
+                if string.find(objNameLower, key) then
+                    isMatch = true
+                    break
+                end
+            end
+
+            if isMatch then
+                local targetModel = obj:IsA("Model") and obj or obj:FindFirstAncestorOfClass("Model") or obj
+                if not foundObjects[targetModel] then
+                    foundObjects[targetModel] = true
+
+                    local isEgg = string.find(string.lower(targetModel.Name), "egg")
+                    local btnColor = isEgg and Color3.fromRGB(130, 60, 180) or Color3.fromRGB(60, 80, 90)
+
+                    createTpButton("[" .. targetModel.ClassName .. "] " .. targetModel.Name, function()
+                        if targetModel:IsA("Model") then
+                            return targetModel:GetPivot()
+                        elseif targetModel:IsA("BasePart") then
+                            return targetModel.CFrame
+                        end
+                        return nil
+                    end, btnColor, false)
+                end
             end
         end
     end
 
-    -- Cập nhật kích thước cuộn
     task.wait(0.05)
     ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
 end
 
 --------------------------------------------------------------------------------
--- 7. SỰ KIỆN ĐIỀU KHIỂN
+-- 7. SỰ KIỆN CHO CÁC NÚT ĐIỀU KHIỂN
 --------------------------------------------------------------------------------
 SetReturnBtn.MouseButton1Click:Connect(function()
     local char = LocalPlayer.Character
